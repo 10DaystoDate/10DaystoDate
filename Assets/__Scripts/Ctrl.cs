@@ -61,6 +61,9 @@ public class Ctrl : MonoBehaviour {
 	public GameObject gamedayPanel;
 	public GameObject phonePanel;
 	public GameObject[] phonePanes;
+	public GameObject morn;
+	public GameObject after;
+	public GameObject night;
 	public Text[] phoneText;
 
 	public bool questionSelect = false;
@@ -69,6 +72,7 @@ public class Ctrl : MonoBehaviour {
 	public int[] playerScore;
 
 	public int dayNumber = 0;
+	public int backdrop;
 	public int questionPhase = 0;
 	public int dayLimit = 5;
 
@@ -134,17 +138,30 @@ public class Ctrl : MonoBehaviour {
 
 	IEnumerator StartDay () { //Start day, reset all day variables, add 1 to day number
 		camScript.CameraChangePos(2);
+		yield return new WaitForSeconds (1);
 		dayNumber += 1;
+		after.SetActive (false);
+		night.SetActive (false);
+		morn.SetActive(true);
 		dayText.text = dayNumber.ToString ();
 		//Play day screen music
-		yield return new WaitForSeconds (3);
+		yield return new WaitForSeconds (2);
 		camScript.CameraChangePos(3);
+		backdrop = 0;
 		questionPhase = 0; //Reset question phase
 		phonePanel.SetActive (false); //Disable phone panel
 		StartCoroutine (StartQuestionPhase ());
 	}
 
 	IEnumerator StartQuestionPhase () { //Start day, reset all day variables
+		if (backdrop == 1) {
+			morn.SetActive (false);
+			after.SetActive (true);
+		} 
+		else if (backdrop == 2) {
+			after.SetActive (false);
+			night.SetActive (true);
+		}
 		yield return new WaitForSeconds (gamedayStartupTime);
 		gamedayPanel.SetActive (true);
 		CreateQuestions ();
@@ -185,6 +202,7 @@ public class Ctrl : MonoBehaviour {
 	IEnumerator ClearQuestions () {
 		yield return new WaitForSeconds (gamedayStartupTime);
 		questionPhase += 1;
+		backdrop += 1;
 		gamedayPanel.SetActive (false);
 		if (questionPhase <= 2) {
 			StartCoroutine (StartQuestionPhase ());
@@ -249,6 +267,9 @@ public class Ctrl : MonoBehaviour {
 			}
 			//phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
 		}
+		yield return new WaitForSeconds (3);
+		camScript.CameraChangePos(4);
+
 
 	}
 
