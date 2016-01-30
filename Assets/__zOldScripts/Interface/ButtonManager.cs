@@ -106,7 +106,6 @@ public class ButtonManager : MonoBehaviour
 		bool redK = Input.GetButtonDown ("p0fire2");
 		//bool yellow = inputDevice.Action4.WasPressed;
 		bool esc = Input.GetButtonDown ("Cancel");
-		bool LTrigger = inputDevice.LeftTrigger.WasPressed;
 		
 		kUp = Input.GetButtonDown ("p0u");
 		kRight = Input.GetButtonDown ("p0r");
@@ -145,17 +144,9 @@ public class ButtonManager : MonoBehaviour
 			if (ctrl.ready && ctrl.selectionDone) {
 				notFocused = true;
 				CheckMovement();
-				ctrl.mapName.text = ctrl.mapNameArray[int.Parse (focusedButton.gameObject.name)];
 				if (green || greenK) {
 					Press (focusedButton.gameObject.name);
 					lastMapButton = focusedButton;
-				}
-			}
-			if (ctrl.pausePanel.activeInHierarchy) {
-				if (LTrigger) {
-					Time.timeScale = 1;
-					loadingPanel.GetComponent<Animator> ().SetBool ("DropDown", true);
-					loadingPanel.GetComponent<Animator> ().SetBool ("LoadMenu", true);
 				}
 			}
 		}
@@ -319,7 +310,6 @@ public class ButtonManager : MonoBehaviour
 				mainCam.backgroundColor = PlayerPrefsX.GetColor ("BGColor");
 				currentBackColor = mainCam.backgroundColor;
 				currentColorScheme = PlayerPrefsX.GetColorArray ("Palette");
-				CreateColorPanels ();
 				break;
 			case "Default":
 				paletteText.text = "Palette: Solarized Dark";
@@ -357,7 +347,6 @@ public class ButtonManager : MonoBehaviour
 				mainCam.backgroundColor = currentBackColor;
 				break;
 			}
-			CreateColorPanels ();
 		}
 
 		if (arenaMenu) {
@@ -369,16 +358,6 @@ public class ButtonManager : MonoBehaviour
 				//SceneManager.LoadScene(0);
 				loadingPanel.GetComponent<Animator> ().SetBool ("DropDown", true);
 				loadingPanel.GetComponent<Animator> ().SetBool ("LoadMenu", true);
-			} else if (int.Parse (textName) >= 0) {
-				if(!ctrl.mapExists){ //check if map has been created
-					if (int.Parse (textName) == 14) { //For random map select
-						CreateMap (Random.Range (0,ctrl.map.Length));
-					} else { //For any other map select
-						CreateMap (int.Parse (textName));
-					}
-					ctrl.mapExists = true;
-					ctrl.submit = true;
-				}
 			}
 		}
 	}
@@ -409,21 +388,5 @@ public class ButtonManager : MonoBehaviour
 		}
 	}
 
-	void CreateMap (int mapNum) {
-		GameObject map = Instantiate (ctrl.map[mapNum], mainController.transform.position, mainController.transform.rotation) as GameObject;
-		map.transform.parent = mainController.transform;
-	}
 
-	void CreateColorPanels () {
-		foreach (Transform child in paletteText.transform) {
-			GameObject.Destroy(child.gameObject);
-		}
-		for (int i = 0; i < currentColorScheme.Length; i++) {
-			GameObject cPanel = Instantiate (colorPanel, panelPosition.transform.position + new Vector3(0,-2 * i,0), panelPosition.transform.rotation) as GameObject;
-			cPanel.GetComponent<Image> ().color = currentColorScheme [i];
-			//cPanel.transform.parent = paletteText.transform;
-			cPanel.transform.SetParent(paletteText.transform, true);
-			cPanel.transform.localScale = new Vector3 (1, 1, 1);
-		}
-	}
 }

@@ -153,7 +153,7 @@ public class PlayerManager : MonoBehaviour
 				readyToPlay = true;
 			} else {
 				pressStart.text = "Waiting for Players...";
-				startPanel.SetActive (true);
+				//startPanel.SetActive (true);
 				readyToPlay = false;
 			}
 		}

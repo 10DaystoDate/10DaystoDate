@@ -95,16 +95,7 @@ public class Player : MonoBehaviour
 			if (ctrl.GetComponent<PlayerManager>().readyToPlay == true) {
 				ctrl.selectionDone = true;
 				if (ctrl.wepSelect) {
-					ctrl.PlayStartSound ();
-				}
-				if (ctrl.mapExists) {
-					if (Time.timeScale != 0) {
-						Time.timeScale = 0;
-						ctrl.pausePanel.SetActive (true);
-					} else {
-						Time.timeScale = 1;
-						ctrl.pausePanel.SetActive (false);
-					}
+					//ctrl.PlayStartSound ();
 				}
 				ctrl.wepSelect = false;
 			} else {

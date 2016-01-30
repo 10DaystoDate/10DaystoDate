@@ -13,97 +13,39 @@ public class Ctrl : MonoBehaviour {
 	public Text[] playerSelectText;
 
 	public List<int> defaultStats;
-	public List<int> defualtStats2;
-	public List<int> gstats;
+	public List<int> tempDefaultStats;
+	public List<int> gStats;
 
-
-	public int numOfPlayers = 2;
-	public GameObject[] playerSpawn;
-	public GameObject playerShip;
-	public int[] wepNum1 = new int[] {0,0,0};
-	public GameObject[] playerCurrent;
-	public GameObject[] playerInput;
-
-	//Variables same across ships
-	public GameObject[] weaponSet;
-
-	public List<int> shipColorNum = new List<int>();
-	public Color[] shipColor;
-	public Color[] shipColorSet;
-	
-	public GameObject scorePanel;
-	public GameObject startPanel;
-	public GameObject pausePanel;
-	//public GameObject missionPanel;
-	public Text[] scoreTitleText;
-	public Text[] scoreText;
-	public Text selectTitle;
-	public Text announcerText;
-	public bool announced = false;
-	//private float aT = 0; //lerp float for announcer text color
-	public Button rematchButton;
-
-	public AudioClip mapSound;
-	public AudioClip startSound;
-	public AudioClip addScore;
-	public AudioClip minusScore;
-	private float sndVolume;
-	public Color tempAnnouncerColor;
-
-	public Vector4[] heartBarPos;
-	
-	public int[] playerScore;
-	public int[] playerTempScore;
-	public bool[] playerSuicided;
-	public GameObject scorePlus;
-	public GameObject scoreMinus;
-	public float scoreAddTime = 1;
-	
-	public Text mapName;
-	public string[] mapNameArray;
-	public GameObject[] map;
-
-	public GameObject starEmit;
-
-	public GameObject camFocus;
-	public GameObject bulletContainer;
-	
-	public GameObject selectCtrl;
-	public PlayerManager plyrMan;
 	public Camera mainCam;
-
+	public CameraScript camScript;
+	public PlayerManager plyrMan;
 	public bool submit = false;
 
 	public bool ready = true; //map screen
 	public bool roundEnd = false;
 	public bool selectionDone = false;
-	
-	public float roundEndTimer = 0;
-	public float roundEndTimeDelay = 1;
-	
+
 	public bool goBack = false;
 	public bool wepSelect = true;
 	public bool mapExists = false;
-	private bool rematch;
 
-	public bool lastTwoPlayers = false;
+	public GameObject[] playerCurrent;
+	public GameObject[] playerInput;
 
-	private int tempLives = 300;
-	private int classicTurn = 1;
-
+	public bool dayStart = false;
+	public float gamedayStartupTime = 2;
+	public int numOfPlayers;
+	public GameObject[] playerSpawn;
+	public GameObject playerChar;
 
 	// Use this for initialization
 	void Awake() //INCONTROL
 	{
 		plyrMan = this.GetComponent<PlayerManager> ();
+		camScript = mainCam.GetComponent<CameraScript> ();
 		/*selectCtrl = GameObject.Find ("SelectController");
 		wepSelect = true;
 		sndVolume = PlayerPrefs.GetFloat ("SndVol");
-
-		heartBarPos [0] = new Vector4 (0, Screen.height, -0.5f, 2);
-		heartBarPos [1] = new Vector4 (Screen.width, Screen.height, 1.5f, 2);
-		heartBarPos [2] = new Vector4 (0, 0, -0.5f, -1);
-		heartBarPos [3] = new Vector4 (Screen.width, 0, 1.5f, -1);
 
 
 		//mainCam.backgroundColor = PlayerPrefsX.GetColor ("BGColor");
@@ -117,11 +59,203 @@ public class Ctrl : MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
+		if (selectionDone) { //Players have pressed start on character select screen
+			camScript.CameraChangePos(2);
+			if (ready) { //At school screen
+				//Go to day screen (Day 1)
+				if (dayStart) {
+					SetGameday (0, numOfPlayers);
+				}
+			}
+		}
+	}
+
+	IEnumerator SetGameday (int phaseNum, int numOfPlayers) { //Set up game scene (Create girl, players, questions, question choosers)
+		camScript.CameraChangePos(3);
+
+		yield return new WaitForSeconds (gamedayStartupTime); //Wait for time
+		CreateGirl ();
+
+		numOfPlayers = 4; //set num of players to 4
+		for (int i = 0; i < 4; i++) { //Loops for however many number of players
+			if (plyrMan.playerJoined[i]) {
+				CreatePlayer(i); //Creates a player ship
+			} else {
+				numOfPlayers -= 1; //Subtract from num of players to find total num of players
+			}
+		}
+		ready = false;
+		submit = false;
+	}
+
+	void CreateGirl() { //Set girl stats and instantiate her?
+		for (int i = 0; i < defaultStats.Count; i++) { //Fill up temp stats with 2, 1, 0, -1s (To have even amount of numbers
+			tempDefaultStats.Add(defaultStats[i]);
+		}
+
+		for (int i = 0; i < defaultStats.Count; i++) { //Fill up gStats with random stats based on defaultStats
+			int tempDefNum = Random.Range(0,tempDefaultStats.Count); //Save a random number within tempDefaultStats count
+			gStats.Add(tempDefaultStats[tempDefNum]); //Add a random element from tempDefaultStats based on length of tempDefaultStats to gStats
+			tempDefaultStats.RemoveAt(tempDefNum); //Remove element from tempDefault stats
+		}
+	}
+
+	void CreatePlayer (int playerNum) { //Instantiate players
+		//Instantiate player ship at respective spawn
+		playerSpawn [playerNum] = GameObject.Find ("P" + (playerNum+1) + "Spawn"); //Get spawn location
+		GameObject playerX = Instantiate (playerChar, playerSpawn [playerNum].transform.position, playerSpawn [playerNum].transform.rotation) as GameObject;
+		playerX.transform.parent = this.transform; //Make player ship child of this game object
+		PlayerController playerXScript = playerX.GetComponent<PlayerController>(); //Get script of player ship
+		playerXScript.playerNum = playerNum; //Set ship player number
+		playerXScript.playerInput = playerInput [playerNum]; //Set player input
+	}
+
+	void GenerateQuestion() {
+
+	}
+
+	void CreatePlayerCharacter() {
+
+	}
+	public void GoToLevel(int levelNum){
+		GameObject loadingPanel = GameObject.Find ("LoadingPanel");
+		loadingPanel.GetComponent<Animator> ().SetBool ("FromSelect", true);
+	}
+
+	/*void CreatePlayerShip (int playerNum) {
+		//Instantiate player ship at respective spawn
+		playerSpawn [playerNum] = GameObject.Find ("P" + (playerNum+1) + "Spawn");
+		GameObject playerX = Instantiate (playerShip, playerSpawn [playerNum].transform.position, playerSpawn [playerNum].transform.rotation) as GameObject;
+		playerX.transform.parent = this.transform; //Make player ship child of this game object
+		PlayerController playerXScript = playerX.GetComponent<PlayerController>(); //Get script of player ship
+		playerXScript.playerNum = playerNum; //Set ship player number
+		playerXScript.playerInput = playerInput [playerNum];
+		playerXScript.startingHealth = tempLives;
+		playerXScript.classicTurning = classicTurn;
+
+		playerX.tag = playerNum.ToString(); //Set tag to player number String
+		playerCurrent[playerNum] = playerX; //Add ship gameobject to array
+
+	}*/
+	
+	/*void AddScore (int playerNum) {
+		//playerScore[playerNum] += 1; //Add a score to player who killed some1
+		playerDeaths += 1; //Add 1 to player death counter
+		playerTempScore [playerNum] += 1;
+		announcerText.text = "";
+		aT = 0;
+		announced = true;
+		shake += shakeAmount;
+		for (int i = 0; i < 4; i++) {
+			
+			if(playerTempScore[i] == 1) {
+				if (!firstBloodHappened) {
+					announcerText.text = "SINGLE KILL";
+					//GetComponent<AudioSource>().PlayOneShot (firstBlood, sndVolume);
+					tempAnnouncerColor = shipColor[i];
+					firstBloodHappened = true;
+				}
+			}
+			if(playerTempScore[i] == 2) {
+				announcerText.text = "DOUBLE KILL";
+				//GetComponent<AudioSource>().PlayOneShot (doubleKill, sndVolume);
+				tempAnnouncerColor = shipColor[i];
+			} else if(playerTempScore[i] == 3) {
+				announcerText.text = "TRIPLE KILL";
+				//GetComponent<AudioSource>().PlayOneShot (tripleKill, sndVolume);
+				tempAnnouncerColor = shipColor[i];
+			}
+		}
+	}
+
+	void Suicide (int playerNum) {
+		//playerScore[playerNum] -= 1; //Add a score to player who killed some1
+		playerDeaths += 1; //Add 1 to player death counter
+		//playerTempScore [playerNum] -= 1;
+		playerSuicided [playerNum] = true;
+		shake += shakeAmount;
+		announcerText.text = "";
+		aT = 0;
+		announced = true;
+		announcerText.text = "SELF KILL";
+		//GetComponent<AudioSource>().PlayOneShot (firstBlood, sndVolume);
+		tempAnnouncerColor = shipColor[playerNum];
+	}
+
+	void RoundEnd (){
+		//Set Score when round ends for all players texts
+		for (int i = 0; i < 4; i++) {
+			if (plyrMan.playerJoined[i]) { //if the player number is in the game
+				if (playerScore [i] == 0) {
+					scoreText[i].text = "0";
+				}
+				float suiTimer = 0.5f; //Set base suicide popup timer
+				scoreTitleText [i].color = shipColor [i];
+				for (int x = 0; x < playerTempScore [i]; x++) { //For every kill
+					StartCoroutine (ScoreScreenPlus (i, x, playerTempScore [i], scoreAddTime * x + 0.5f));
+					suiTimer += 1; //Add one delay to suicide timer
+				}
+				if (playerSuicided [i]) { //If player had a suicide
+					StartCoroutine (ScoreScreenSuicide (i, scoreAddTime * suiTimer));
+				}
+			} else {
+				scoreTitleText[i].color = new Color(0,0,0,0);
+				scoreText[i].text = "";
+			}
+			playerTempScore[i] = 0;
+			playerSuicided [i] = false;
+		}
+		foreach (Transform child in transform) {
+			GameObject.Destroy(child.gameObject);
+		}
+		roundEnd = true;
+		mapExists = false;
+		firstBloodHappened = false;
+		scorePanel.SetActive (true);
+	}*/
+
+	/*public void Rematch () { //Rematch button is pressed
+		rematch = true;
+	}
+
+
+	public void PlayStartSound () {
+		GetComponent<AudioSource> ().PlayOneShot (mapSound, sndVolume);
+	}
+
+	IEnumerator ScoreScreenPlus (int playerNum, int killNum, int tempScore, float delayTime) {
+		yield return new WaitForSeconds (delayTime);
+		GetComponent<AudioSource> ().PlayOneShot (addScore, sndVolume);
+		playerScore [playerNum] += 1;
+		GameObject scorePlusOne = Instantiate (scorePlus, scoreText [playerNum].transform.position, scoreText [playerNum].transform.rotation) as GameObject;
+		scoreText [playerNum].text = string.Format ("{0}", playerScore [playerNum]);
+		Destroy (scorePlusOne, 2);
+	}
+
+	IEnumerator ScoreScreenSuicide (int playerNum, float delayTime) {
+		yield return new WaitForSeconds (delayTime);
+		GetComponent<AudioSource> ().PlayOneShot (minusScore, sndVolume);
+		GameObject scoreMinusOne = Instantiate (scoreMinus, scoreText [playerNum].transform.position, scoreText [playerNum].transform.rotation) as GameObject;
+		playerScore [playerNum] -= 1;
+		scoreText [playerNum].text = string.Format ("{0}", playerScore [playerNum]);
+		Destroy (scoreMinusOne, 2);
+	}
+
+	public void TimeStopActivate (float timeSpeed, float timeLength) {
+		StartCoroutine (TimeStop (timeSpeed, timeLength));
+	}
+
+	IEnumerator TimeStop (float speed, float length) {
+		Time.timeScale = speed;
+		yield return new WaitForSeconds (length);
+		Time.timeScale = 1.0f;
+	}*/
 
 
 
 
-		/*if (selectionDone) { //Players have ready selected their weapons
+
+	/*if (selectionDone) { //Players have ready selected their weapons
 			if (ready) { //on map select screen
 				if (submit) { //If submit is pressed start round
 					selectTitle.text = "";
@@ -200,146 +334,4 @@ public class Ctrl : MonoBehaviour {
 		} else {
 			shake = 0.0f;
 		}*/
-	}
-
-	void CreateGirl() {
-		 
-		public List<int> defaultStats = ;
-
-	}
-
-
-	void CreatePlayerShip (int playerNum) {
-		//Instantiate player ship at respective spawn
-		playerSpawn [playerNum] = GameObject.Find ("P" + (playerNum+1) + "Spawn");
-		GameObject playerX = Instantiate (playerShip, playerSpawn [playerNum].transform.position, playerSpawn [playerNum].transform.rotation) as GameObject;
-		playerX.transform.parent = this.transform; //Make player ship child of this game object
-		PlayerController playerXScript = playerX.GetComponent<PlayerController>(); //Get script of player ship
-		playerXScript.playerNum = playerNum; //Set ship player number
-		playerXScript.playerInput = playerInput [playerNum];
-		playerXScript.startingHealth = tempLives;
-		playerXScript.classicTurning = classicTurn;
-
-		playerX.tag = playerNum.ToString(); //Set tag to player number String
-		playerCurrent[playerNum] = playerX; //Add ship gameobject to array
-
-	}
-	
-	/*void AddScore (int playerNum) {
-		//playerScore[playerNum] += 1; //Add a score to player who killed some1
-		playerDeaths += 1; //Add 1 to player death counter
-		playerTempScore [playerNum] += 1;
-		announcerText.text = "";
-		aT = 0;
-		announced = true;
-		shake += shakeAmount;
-		for (int i = 0; i < 4; i++) {
-			
-			if(playerTempScore[i] == 1) {
-				if (!firstBloodHappened) {
-					announcerText.text = "SINGLE KILL";
-					//GetComponent<AudioSource>().PlayOneShot (firstBlood, sndVolume);
-					tempAnnouncerColor = shipColor[i];
-					firstBloodHappened = true;
-				}
-			}
-			if(playerTempScore[i] == 2) {
-				announcerText.text = "DOUBLE KILL";
-				//GetComponent<AudioSource>().PlayOneShot (doubleKill, sndVolume);
-				tempAnnouncerColor = shipColor[i];
-			} else if(playerTempScore[i] == 3) {
-				announcerText.text = "TRIPLE KILL";
-				//GetComponent<AudioSource>().PlayOneShot (tripleKill, sndVolume);
-				tempAnnouncerColor = shipColor[i];
-			}
-		}
-	}
-
-	void Suicide (int playerNum) {
-		//playerScore[playerNum] -= 1; //Add a score to player who killed some1
-		playerDeaths += 1; //Add 1 to player death counter
-		//playerTempScore [playerNum] -= 1;
-		playerSuicided [playerNum] = true;
-		shake += shakeAmount;
-		announcerText.text = "";
-		aT = 0;
-		announced = true;
-		announcerText.text = "SELF KILL";
-		//GetComponent<AudioSource>().PlayOneShot (firstBlood, sndVolume);
-		tempAnnouncerColor = shipColor[playerNum];
-	}
-
-	void RoundEnd (){
-		//Set Score when round ends for all players texts
-		for (int i = 0; i < 4; i++) {
-			if (plyrMan.playerJoined[i]) { //if the player number is in the game
-				if (playerScore [i] == 0) {
-					scoreText[i].text = "0";
-				}
-				float suiTimer = 0.5f; //Set base suicide popup timer
-				scoreTitleText [i].color = shipColor [i];
-				for (int x = 0; x < playerTempScore [i]; x++) { //For every kill
-					StartCoroutine (ScoreScreenPlus (i, x, playerTempScore [i], scoreAddTime * x + 0.5f));
-					suiTimer += 1; //Add one delay to suicide timer
-				}
-				if (playerSuicided [i]) { //If player had a suicide
-					StartCoroutine (ScoreScreenSuicide (i, scoreAddTime * suiTimer));
-				}
-			} else {
-				scoreTitleText[i].color = new Color(0,0,0,0);
-				scoreText[i].text = "";
-			}
-			playerTempScore[i] = 0;
-			playerSuicided [i] = false;
-		}
-		foreach (Transform child in transform) {
-			GameObject.Destroy(child.gameObject);
-		}
-		roundEnd = true;
-		mapExists = false;
-		firstBloodHappened = false;
-		scorePanel.SetActive (true);
-	}*/
-
-	public void Rematch () { //Rematch button is pressed
-		rematch = true;
-	}
-
-	public void GoToLevel(int levelNum){
-		GameObject loadingPanel = GameObject.Find ("LoadingPanel");
-		loadingPanel.GetComponent<Animator> ().SetBool ("FromSelect", true);
-	}
-
-	public void PlayStartSound () {
-		GetComponent<AudioSource> ().PlayOneShot (mapSound, sndVolume);
-	}
-
-	IEnumerator ScoreScreenPlus (int playerNum, int killNum, int tempScore, float delayTime) {
-		yield return new WaitForSeconds (delayTime);
-		GetComponent<AudioSource> ().PlayOneShot (addScore, sndVolume);
-		playerScore [playerNum] += 1;
-		GameObject scorePlusOne = Instantiate (scorePlus, scoreText [playerNum].transform.position, scoreText [playerNum].transform.rotation) as GameObject;
-		scoreText [playerNum].text = string.Format ("{0}", playerScore [playerNum]);
-		Destroy (scorePlusOne, 2);
-	}
-
-	IEnumerator ScoreScreenSuicide (int playerNum, float delayTime) {
-		yield return new WaitForSeconds (delayTime);
-		GetComponent<AudioSource> ().PlayOneShot (minusScore, sndVolume);
-		GameObject scoreMinusOne = Instantiate (scoreMinus, scoreText [playerNum].transform.position, scoreText [playerNum].transform.rotation) as GameObject;
-		playerScore [playerNum] -= 1;
-		scoreText [playerNum].text = string.Format ("{0}", playerScore [playerNum]);
-		Destroy (scoreMinusOne, 2);
-	}
-
-	public void TimeStopActivate (float timeSpeed, float timeLength) {
-		StartCoroutine (TimeStop (timeSpeed, timeLength));
-	}
-
-	IEnumerator TimeStop (float speed, float length) {
-		Time.timeScale = speed;
-		yield return new WaitForSeconds (length);
-		Time.timeScale = 1.0f;
-	}
-
 }
