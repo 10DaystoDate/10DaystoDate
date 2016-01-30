@@ -132,15 +132,22 @@ public class Ctrl : MonoBehaviour {
 		for (int i = 0; i < defaultStats.Count; i++) { //Fill statnums with whatever (we only use it for its places)
 			statNums.Add(defaultStats[i]); //Fill up until as many elemnets as stats
 		}
-		for (int i = 0; i < 4; i++) { //Generate question 4 times
-			GenerateQuestion ();
+		for (int i = 0; i < 4; i++) { //Generate 4 questions
+			GenerateQuestion (i);
 		}
 	}
-	void GenerateQuestion() {
+	void GenerateQuestion(int questionNum) {
 		//Randomly pick g stat category from list
 		int tempDefNum = Random.Range(0,statNums.Count); //Save a random number within statNums count
 		questionScore.Add(gStats[tempDefNum]); //Add a score from gStats to the questionScore list
 		statNums.RemoveAt(tempDefNum); //Remove element from statNums
+
+		//Add question text for all players
+		for (int i = 0; i < 4; i++) { //for each question box
+			if (plyrMan.playerJoined[i]) { //If player is in the game
+				qTextList [i].questionText[questionNum].text = questionlist [tempDefNum].question[Random.Range(0,4)]; //Choose random question from the category for the player
+			}
+		}
 	}
 
 	public void GoToLevel(int levelNum){
