@@ -8,7 +8,12 @@ using UnityEngine.SceneManagement;
 //using InControl;
 
 public class Ctrl : MonoBehaviour {
-
+	[System.Serializable]
+	public class QuestionList
+	{
+		public string[] question;
+	}
+	public QuestionList[] questionlist;
 
 	public Text[] playerSelectText;
 
@@ -27,7 +32,6 @@ public class Ctrl : MonoBehaviour {
 
 	public bool goBack = false;
 	public bool wepSelect = true;
-	public bool mapExists = false;
 
 	public GameObject[] playerCurrent;
 	public GameObject[] playerInput;
@@ -43,31 +47,27 @@ public class Ctrl : MonoBehaviour {
 	{
 		plyrMan = this.GetComponent<PlayerManager> ();
 		camScript = mainCam.GetComponent<CameraScript> ();
-		/*selectCtrl = GameObject.Find ("SelectController");
-		wepSelect = true;
-		sndVolume = PlayerPrefs.GetFloat ("SndVol");
-
-
-		//mainCam.backgroundColor = PlayerPrefsX.GetColor ("BGColor");
-		shipColorSet = PlayerPrefsX.GetColorArray ("Palette");
-		tempLives = PlayerPrefs.GetInt ("LivesNum") * 100;
-		tempLives = 200;
-		classicTurn = PlayerPrefs.GetInt ("TurnClassic");*/
-
-		CreateGirl ();
 
 	}
 	// Update is called once per frame
 	void Update () {
 		if (selectionDone) { //Players have pressed start on character select screen
-			camScript.CameraChangePos(2);
-			if (ready) { //At school screen
-				//Go to day screen (Day 1)
-				if (dayStart) {
-					SetGameday (0, numOfPlayers);
-				}
+			if (ready) {
+				StartCoroutine (StartDay ());
+				ready = false;
 			}
 		}
+		if (dayStart) { //At school screen
+			//Go to day screen (Day 1)
+			StartCoroutine (SetGameday (0, numOfPlayers));
+			dayStart = false;
+		}
+	}
+
+	IEnumerator StartDay () {
+		camScript.CameraChangePos(2);
+		yield return new WaitForSeconds (gamedayStartupTime);
+		dayStart = true;
 	}
 
 	IEnumerator SetGameday (int phaseNum, int numOfPlayers) { //Set up game scene (Create girl, players, questions, question choosers)
@@ -79,7 +79,7 @@ public class Ctrl : MonoBehaviour {
 		numOfPlayers = 4; //set num of players to 4
 		for (int i = 0; i < 4; i++) { //Loops for however many number of players
 			if (plyrMan.playerJoined[i]) {
-				CreatePlayer(i); //Creates a player ship
+				CreatePlayerCharacter(i); //Creates a player ship
 			} else {
 				numOfPlayers -= 1; //Subtract from num of players to find total num of players
 			}
@@ -89,6 +89,9 @@ public class Ctrl : MonoBehaviour {
 	}
 
 	void CreateGirl() { //Set girl stats and instantiate her?
+		if (gStats.Count > 1) {
+			gStats.Clear();
+		}
 		for (int i = 0; i < defaultStats.Count; i++) { //Fill up temp stats with 2, 1, 0, -1s (To have even amount of numbers
 			tempDefaultStats.Add(defaultStats[i]);
 		}
@@ -100,7 +103,7 @@ public class Ctrl : MonoBehaviour {
 		}
 	}
 
-	void CreatePlayer (int playerNum) { //Instantiate players
+	void CreatePlayerCharacter (int playerNum) { //Instantiate players
 		//Instantiate player ship at respective spawn
 		playerSpawn [playerNum] = GameObject.Find ("P" + (playerNum+1) + "Spawn"); //Get spawn location
 		GameObject playerX = Instantiate (playerChar, playerSpawn [playerNum].transform.position, playerSpawn [playerNum].transform.rotation) as GameObject;
@@ -114,9 +117,6 @@ public class Ctrl : MonoBehaviour {
 
 	}
 
-	void CreatePlayerCharacter() {
-
-	}
 	public void GoToLevel(int levelNum){
 		GameObject loadingPanel = GameObject.Find ("LoadingPanel");
 		loadingPanel.GetComponent<Animator> ().SetBool ("FromSelect", true);

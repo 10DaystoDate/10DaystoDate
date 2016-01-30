@@ -80,7 +80,8 @@ public class PlayerManager : MonoBehaviour
 				if (ThereIsNoPlayerUsingKeyboard1 ()) {
 					CreatePlayer (null, 1);
 				}
-			}if (JoinButtonWasPressedOnListener (keyboardListener2)) {
+			}
+			if (JoinButtonWasPressedOnListener (keyboardListener2)) {
 				if (ThereIsNoPlayerUsingKeyboard2 ()) {
 					CreatePlayer (null, 2);
 				}

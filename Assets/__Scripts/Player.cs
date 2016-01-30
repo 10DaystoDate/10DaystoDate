@@ -47,8 +47,6 @@ public class Player : MonoBehaviour
 	{
 		ctrl = GameObject.Find ("_MainController").GetComponent<Ctrl> ();
 
-		//Set default weapons
-
 		playerStatus = ctrl.playerSelectText [playerNum];
 		Debug.Log (playerStatus);
 

@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour {
 
 	void Awake () {
 		//Get ship variables from main controller
-		mainController = GameObject.Find ("MainController");
+		mainController = GameObject.Find ("_MainController");
 		ctrl = mainController.GetComponent<Ctrl>();
 	}
 
