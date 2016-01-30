@@ -12,7 +12,9 @@ public class Ctrl : MonoBehaviour {
 
 	public Text[] playerSelectText;
 
-	public int[] gstats;
+	public List<int> defaultStats;
+	public List<int> defualtStats2;
+	public List<int> gstats;
 
 
 	public int numOfPlayers = 2;
@@ -202,9 +204,7 @@ public class Ctrl : MonoBehaviour {
 
 	void CreateGirl() {
 		 
-		for (int x = 0; x < gstats.Length; x++) {
-			gstats [x] = Random.Range (-1, 3);
-		}
+		public List<int> defaultStats = ;
 
 	}
 
