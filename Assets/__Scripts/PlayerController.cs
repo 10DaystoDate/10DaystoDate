@@ -76,4 +76,15 @@ public class PlayerController : MonoBehaviour {
 		curChooser.transform.position = question[curQuestionNum].transform.position;
 		//Maybe add in logic for skipping taken question later
 	}
+
+	public void EndTimerChoose () {if (ctrl.questionSelect) { //If in question selection phase
+			//Movement
+			if (ctrl.playerInQuestionSelect [playerNum]) {
+				//Accept question, deactivate question chooser
+				ctrl.ChooseQuestion (playerNum, curQuestionNum); //Run ChooseQuestion on Ctrl script
+				curChooser.SetActive (false); //Disable the cursor chooser for now
+				Debug.Log ("TOO SLOW");
+			}
+		}
+	}
 }

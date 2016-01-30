@@ -251,7 +251,7 @@ public class PlayerManager : MonoBehaviour
 		{
 			// Pop a position off the list. We'll add it back if the player is removed.
 			
-			var gameObject = (GameObject) Instantiate( playerPrefab, ctrl.playerSelectText[FindPlayer ()].transform.position - Vector3.forward, Quaternion.identity );
+			var gameObject = (GameObject) Instantiate( playerPrefab, ctrl.playerSelectText[FindPlayer ()].transform.position - Vector3.forward - Vector3.up*1.5f, Quaternion.identity );
 			var player = gameObject.GetComponent<Player>();
 
 			int emptySlot = FindPlayer ();

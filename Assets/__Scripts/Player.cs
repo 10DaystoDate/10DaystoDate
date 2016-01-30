@@ -50,6 +50,7 @@ public class Player : MonoBehaviour
 		ctrl = GameObject.Find ("_MainController").GetComponent<Ctrl> ();
 
 		playerStatus = ctrl.playerSelectText [playerNum];
+		GetComponent<SpriteRenderer> ().sprite = ctrl.playerSprites [playerNum];
 		Debug.Log (playerStatus);
 
 		//Player is choosing weapons
@@ -83,6 +84,7 @@ public class Player : MonoBehaviour
 					choosing = false;
 					playerStatus.text = string.Format ("Player {0} Ready!", playerNum+1);
 					ctrl.SendMessage ("PlayerReady", playerNum);
+					ctrl.PlayReadySound ();
 				}
 			}
 			if (choosing) {
