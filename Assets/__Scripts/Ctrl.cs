@@ -43,6 +43,7 @@ public class Ctrl : MonoBehaviour {
 
 	public bool goBack = false;
 	public bool wepSelect = true;
+	private bool questionStart = false;
 
 	public GameObject[] playerCurrent;
 	public GameObject[] playerInput;
@@ -52,6 +53,22 @@ public class Ctrl : MonoBehaviour {
 	public int numOfPlayers;
 	public GameObject[] playerSpawn;
 	public GameObject playerChar;
+
+	public Text dayText;
+
+	public GameObject gamedayPanel;
+	public GameObject phonePanel;
+	public GameObject[] phonePanes;
+	public Text[] phoneText;
+
+	public bool questionSelect = false;
+	public bool[] playerInQuestionSelect;
+
+	public int[] playerScore;
+
+	public int dayNumber = 0;
+	public int questionPhase = 0;
+	public int dayLimit = 5;
 
 	// Use this for initialization
 	void Awake() //INCONTROL
@@ -63,40 +80,39 @@ public class Ctrl : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (selectionDone) { //Players have pressed start on character select screen
+			//Reset stats
 			if (ready) {
-				StartCoroutine (StartDay ());
+				SetupGame (numOfPlayers);
 				ready = false;
 			}
 		}
 		if (dayStart) { //At school screen
 			//Go to day screen (Day 1)
-			StartCoroutine (SetGameday (0, numOfPlayers));
+			StartCoroutine (StartDay ());
 			dayStart = false;
 		}
+
 	}
-
-	IEnumerator StartDay () {
-		camScript.CameraChangePos(2);
-		yield return new WaitForSeconds (gamedayStartupTime);
-		dayStart = true;
-	}
-
-	IEnumerator SetGameday (int phaseNum, int numOfPlayers) { //Set up game scene (Create girl, players, questions, question choosers)
-		camScript.CameraChangePos(3);
-
-		yield return new WaitForSeconds (gamedayStartupTime); //Wait for time
+	void SetupGame (int numOfPlayers) { //Set up game scene (Create girl, players) //Reset game variables
+		ResetStats(); //Reset player stats
 		CreateGirl ();
-		CreateQuestions ();
 		numOfPlayers = 4; //set num of players to 4
 		for (int i = 0; i < 4; i++) { //Loops for however many number of players
 			if (plyrMan.playerJoined[i]) {
-				CreatePlayerCharacter(i); //Creates a player ship
+				CreatePlayerCharacter(i); //Creates a player char
 			} else {
 				numOfPlayers -= 1; //Subtract from num of players to find total num of players
 			}
 		}
+		dayStart = true;
 		ready = false;
 		submit = false;
+	}
+
+	void ResetStats () {
+		for (int i = 0; i < playerScore.Length; i++) {
+			playerScore [i] = 0;
+		}
 	}
 
 	void CreateGirl() { //Set girl stats and instantiate her?
@@ -114,17 +130,27 @@ public class Ctrl : MonoBehaviour {
 		}
 	}
 
-	void CreatePlayerCharacter (int playerNum) { //Instantiate players
-		//Instantiate player ship at respective spawn
-		playerSpawn [playerNum] = GameObject.Find ("P" + (playerNum+1) + "Spawn"); //Get spawn location
-		GameObject playerX = Instantiate (playerChar, playerSpawn [playerNum].transform.position, playerSpawn [playerNum].transform.rotation) as GameObject;
-		playerX.transform.parent = this.transform; //Make player ship child of this game object
-		PlayerController playerXScript = playerX.GetComponent<PlayerController>(); //Get script of player ship
-		playerXScript.playerNum = playerNum; //Set ship player number
-		playerXScript.playerInput = playerInput [playerNum]; //Set player input
+	IEnumerator StartDay () { //Start day, reset all day variables, add 1 to day number
+		camScript.CameraChangePos(2);
+		dayNumber += 1;
+		dayText.text = dayNumber.ToString ();
+		//Play day screen music
+		yield return new WaitForSeconds (3);
+		camScript.CameraChangePos(3);
+		questionPhase = 0; //Reset question phase
+		phonePanel.SetActive (false); //Disable phone panel
+		StartCoroutine (StartQuestionPhase ());
+	}
+
+	IEnumerator StartQuestionPhase () { //Start day, reset all day variables
+		yield return new WaitForSeconds (gamedayStartupTime);
+		gamedayPanel.SetActive (true);
+		CreateQuestions ();
+
 	}
 
 	void CreateQuestions() {
+		questionSelect = true;
 		if (statNums.Count > 1) { //If statNums is not empty, empty it
 			statNums.Clear();
 			questionScore.Clear ();
@@ -132,8 +158,11 @@ public class Ctrl : MonoBehaviour {
 		for (int i = 0; i < defaultStats.Count; i++) { //Fill statnums with whatever (we only use it for its places)
 			statNums.Add(defaultStats[i]); //Fill up until as many elemnets as stats
 		}
-		for (int i = 0; i < 4; i++) { //Generate 4 questions
+		for (int i = 0; i < 4; i++) { //Generate 4 questions and set players answering questions to true
 			GenerateQuestion (i);
+			if (plyrMan.playerJoined [i]) {
+				playerInQuestionSelect [i] = true;
+			}
 		}
 	}
 	void GenerateQuestion(int questionNum) {
@@ -143,10 +172,117 @@ public class Ctrl : MonoBehaviour {
 		statNums.RemoveAt(tempDefNum); //Remove element from statNums
 
 		//Add question text for all players
+		int tempQuestNum = Random.Range(0,4);
 		for (int i = 0; i < 4; i++) { //for each question box
 			if (plyrMan.playerJoined[i]) { //If player is in the game
-				qTextList [i].questionText[questionNum].text = questionlist [tempDefNum].question[Random.Range(0,4)]; //Choose random question from the category for the player
+				qTextList [i].questionText[questionNum].text = questionlist [tempDefNum].question[tempQuestNum]; //Choose random question from the category for the player
 			}
+		}
+	}
+
+	IEnumerator ClearQuestions () {
+		yield return new WaitForSeconds (gamedayStartupTime);
+		questionPhase += 1;
+		gamedayPanel.SetActive (false);
+		if (questionPhase <= 2) {
+			StartCoroutine (StartQuestionPhase ());
+		} else {
+			Debug.Log ("DAY FINISHED SHSOW SCORES");
+			StartCoroutine (EndDay ());
+		}
+	}
+
+	IEnumerator EndDay () { //Start day, reset all day variables
+		yield return new WaitForSeconds (1);
+		phonePanel.SetActive(true);
+		for (int i = 0; i < playerScore.Length; i++) {
+			if (plyrMan.playerJoined [i]) { //If player is in the game
+				phonePanes [i].SetActive (true);
+			} else {
+				phonePanes [i].SetActive (false);
+			}
+		}
+		for (int i = 0; i < phoneText.Length; i++) {
+			phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
+		}
+		yield return new WaitForSeconds (2);
+		if (dayNumber < dayLimit) { //If there are still days to go
+			StartCoroutine (StartDay ());
+		} else { //If all days are over
+			//Go to game over screen
+			StartCoroutine (EndGame ());
+		}
+	}
+
+	IEnumerator EndGame () { //Start day, reset all day variables, add 1 to day number
+		//Play day screen music
+		yield return new WaitForSeconds (3);
+		int highestScore = 0;
+		int winningPlayer = 0;
+		for (int i = 0; i < playerScore.Length; i++) {
+			if (plyrMan.playerJoined [i]) { //If player is in the game
+				if (playerScore [i] >= highestScore) {
+					highestScore = playerScore [i];
+					winningPlayer = i;
+				}
+			}
+		}
+
+		phonePanel.SetActive(true);
+		for (int i = 0; i < phoneText.Length; i++) {
+			phoneText [i].text = "You: Will you be my girlfriend forever?";
+			//phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
+		}
+		yield return new WaitForSeconds (3);
+		for (int i = 0; i < phoneText.Length; i++) {
+			phoneText [i].text = "Girl is typing...";
+			//phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
+		}
+		yield return new WaitForSeconds (3);
+		for (int i = 0; i < phoneText.Length; i++) {
+			if (i == winningPlayer) {
+				phoneText [i].text = "Her: YES! <3";
+			} else {
+				phoneText [i].text = "";
+			}
+			//phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
+		}
+
+	}
+
+
+	void CreatePlayerCharacter (int playerNum) { //Instantiate players
+		//Instantiate player ship at respective spawn
+		playerSpawn [playerNum] = GameObject.Find ("P" + (playerNum+1) + "Spawn"); //Get spawn location
+		GameObject playerX = Instantiate (playerChar, playerSpawn [playerNum].transform.position, playerSpawn [playerNum].transform.rotation) as GameObject;
+		playerX.transform.parent = this.transform; //Make player ship child of this game object
+		PlayerController playerXScript = playerX.GetComponent<PlayerController>(); //Get script of player ship
+		playerXScript.playerNum = playerNum; //Set ship player number
+		playerXScript.playerInput = playerInput [playerNum]; //Set player input
+		for (int i = 0; i <4; i++) {
+			playerXScript.question[i] = qTextList [playerNum].questionText[i];
+		}
+	}
+
+	public void ChooseQuestion (int playerNum, int questionNum) {
+		playerScore[playerNum] += questionScore [questionNum]; //Add question score to player's score
+
+		playerInQuestionSelect [playerNum] = false; //Set player to finished selecting question
+
+		for (int i = 0; i < 4; i++) { //for each question
+			if ( i != questionNum) { //if question is not the one player chose
+				qTextList [playerNum].questionText[i].text = ""; //Remove the question text
+			}
+		}
+
+		int boolTest = 0;
+		for (int i = 0; i < playerInQuestionSelect.Length; i++) {
+			if (playerInQuestionSelect [i]) {
+				boolTest += 1;
+			}
+		}
+		if (boolTest == 0) {
+			StartCoroutine(ClearQuestions ());
 		}
 	}
 

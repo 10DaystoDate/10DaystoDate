@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
 	//Weapon text fields
 	public PlayerActions Actions { get; set; }
 
+	public Text[] question;
+
 	public GameObject mainCtrl;
 	public Ctrl ctrl;
 	public CharSelectCtrl sCtrl;
