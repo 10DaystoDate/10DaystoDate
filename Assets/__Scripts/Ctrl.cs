@@ -15,6 +15,13 @@ public class Ctrl : MonoBehaviour {
 	}
 	public QuestionList[] questionlist;
 
+	[System.Serializable]
+	public class QuestionTextList
+	{
+		public Text[] questionText;
+	}
+	public QuestionTextList[] qTextList;
+
 	public Text[] playerSelectText;
 
 	public List<int> defaultStats;
