@@ -22,8 +22,12 @@ public class Ctrl : MonoBehaviour {
 	}
 	public QuestionTextList[] qTextList;
 
+	public List<int> questionScore;
+	public List<int> questionCat;
+
 	public Text[] playerSelectText;
 
+	public List<int> statNums;
 	public List<int> defaultStats;
 	public List<int> tempDefaultStats;
 	public List<int> gStats;
@@ -82,7 +86,7 @@ public class Ctrl : MonoBehaviour {
 
 		yield return new WaitForSeconds (gamedayStartupTime); //Wait for time
 		CreateGirl ();
-
+		CreateQuestions ();
 		numOfPlayers = 4; //set num of players to 4
 		for (int i = 0; i < 4; i++) { //Loops for however many number of players
 			if (plyrMan.playerJoined[i]) {
@@ -120,8 +124,23 @@ public class Ctrl : MonoBehaviour {
 		playerXScript.playerInput = playerInput [playerNum]; //Set player input
 	}
 
+	void CreateQuestions() {
+		if (statNums.Count > 1) { //If statNums is not empty, empty it
+			statNums.Clear();
+			questionScore.Clear ();
+		}
+		for (int i = 0; i < defaultStats.Count; i++) { //Fill statnums with whatever (we only use it for its places)
+			statNums.Add(defaultStats[i]); //Fill up until as many elemnets as stats
+		}
+		for (int i = 0; i < 4; i++) { //Generate question 4 times
+			GenerateQuestion ();
+		}
+	}
 	void GenerateQuestion() {
-
+		//Randomly pick g stat category from list
+		int tempDefNum = Random.Range(0,statNums.Count); //Save a random number within statNums count
+		questionScore.Add(gStats[tempDefNum]); //Add a score from gStats to the questionScore list
+		statNums.RemoveAt(tempDefNum); //Remove element from statNums
 	}
 
 	public void GoToLevel(int levelNum){
