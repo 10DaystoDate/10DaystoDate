@@ -9,7 +9,11 @@ using UnityEngine.SceneManagement;
 
 public class Ctrl : MonoBehaviour {
 
+
 	public Text[] playerSelectText;
+
+	public int[] gstats;
+
 
 	public int numOfPlayers = 2;
 	public GameObject[] playerSpawn;
@@ -105,9 +109,14 @@ public class Ctrl : MonoBehaviour {
 		tempLives = PlayerPrefs.GetInt ("LivesNum") * 100;
 		tempLives = 200;
 		classicTurn = PlayerPrefs.GetInt ("TurnClassic");*/
+
+		CreateGirl ();
+
 	}
 	// Update is called once per frame
 	void Update () {
+
+
 
 
 		/*if (selectionDone) { //Players have ready selected their weapons
@@ -190,6 +199,15 @@ public class Ctrl : MonoBehaviour {
 			shake = 0.0f;
 		}*/
 	}
+
+	void CreateGirl() {
+		 
+		for (int x = 0; x < gstats.Length; x++) {
+			gstats [x] = Random.Range (-1, 3);
+		}
+
+	}
+
 
 	void CreatePlayerShip (int playerNum) {
 		//Instantiate player ship at respective spawn
