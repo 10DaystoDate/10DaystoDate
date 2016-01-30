@@ -187,8 +187,11 @@ public class Ctrl : MonoBehaviour {
 	void GenerateQuestion(int questionNum) {
 		//Randomly pick g stat category from list
 		int tempDefNum = Random.Range(0,statNums.Count); //Save a random number within statNums count
+		while (statNums [tempDefNum] == 99) { //While it is doing a category that was chosen before
+			tempDefNum = Random.Range(0,statNums.Count); //Rechoose a random number
+		}
 		questionScore.Add(gStats[tempDefNum]); //Add a score from gStats to the questionScore list
-		statNums.RemoveAt(tempDefNum); //Remove element from statNums
+		statNums[tempDefNum] = 99; //Replace statNum with 99 to know to skip it
 
 		//Add question text for all players
 		int tempQuestNum = Random.Range(0,4);
