@@ -32,6 +32,8 @@ public class Ctrl : MonoBehaviour {
 	public List<int> tempDefaultStats;
 	public List<int> gStats;
 
+	public AudioClip dayStartSound;
+
 	public Camera mainCam;
 	public CameraScript camScript;
 	public PlayerManager plyrMan;
@@ -205,7 +207,7 @@ public class Ctrl : MonoBehaviour {
 		for (int i = 0; i < phoneText.Length; i++) {
 			phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
 		}
-		yield return new WaitForSeconds (2);
+		yield return new WaitForSeconds (4);
 		if (dayNumber < dayLimit) { //If there are still days to go
 			StartCoroutine (StartDay ());
 		} else { //If all days are over
