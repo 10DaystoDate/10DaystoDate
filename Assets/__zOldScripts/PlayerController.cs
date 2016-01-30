@@ -79,8 +79,6 @@ public class PlayerController : MonoBehaviour {
 		pIn = playerInput.GetComponent<Player>();
 		//Get/Set weapons from Main Ctrl on creation
 		wepNum [0] = ctrl.wepNum1 [playerNum];
-		wepNum [1] = ctrl.wepNum2 [playerNum];
-		wepNum [2] = ctrl.wepNum3 [playerNum];
 		
 		//Set variables from mainController
 		origSpeed = speed;

@@ -41,7 +41,7 @@ public class PlayerManager : MonoBehaviour
 	PlayerActions joystickListener;
 	
 	void Awake () {
-		mainCtrl = GameObject.Find ("MainController");
+		mainCtrl = GameObject.Find ("_MainController");
 		ctrl = mainCtrl.GetComponent<Ctrl> ();
 		volume = PlayerPrefs.GetFloat ("SndVol");
 	}
@@ -250,7 +250,7 @@ public class PlayerManager : MonoBehaviour
 		{
 			// Pop a position off the list. We'll add it back if the player is removed.
 			
-			var gameObject = (GameObject) Instantiate( playerPrefab, GetComponent<CharSelectCtrl>().shipBox[FindPlayer ()].transform.position - Vector3.forward, Quaternion.identity );
+			var gameObject = (GameObject) Instantiate( playerPrefab, ctrl.playerSelectText[FindPlayer ()].transform.position - Vector3.forward, Quaternion.identity );
 			var player = gameObject.GetComponent<Player>();
 
 			int emptySlot = FindPlayer ();

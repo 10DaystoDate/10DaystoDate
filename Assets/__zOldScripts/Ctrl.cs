@@ -8,13 +8,13 @@ using UnityEngine.SceneManagement;
 //using InControl;
 
 public class Ctrl : MonoBehaviour {
+
+	public Text[] playerSelectText;
+
 	public int numOfPlayers = 2;
-	public int playerDeaths = 0;
 	public GameObject[] playerSpawn;
 	public GameObject playerShip;
 	public int[] wepNum1 = new int[] {0,0,0};
-	public int[] wepNum2 = new int[] {0,0,0};
-	public int[] wepNum3 = new int[] {0,0,0};
 	public GameObject[] playerCurrent;
 	public GameObject[] playerInput;
 
@@ -34,13 +34,9 @@ public class Ctrl : MonoBehaviour {
 	public Text selectTitle;
 	public Text announcerText;
 	public bool announced = false;
-	private float aT = 0; //lerp float for announcer text color
-	private bool firstBloodHappened = false;
+	//private float aT = 0; //lerp float for announcer text color
 	public Button rematchButton;
-	
-	public AudioClip firstBlood;
-	public AudioClip doubleKill;
-	public AudioClip tripleKill;
+
 	public AudioClip mapSound;
 	public AudioClip startSound;
 	public AudioClip addScore;
@@ -68,11 +64,7 @@ public class Ctrl : MonoBehaviour {
 	
 	public GameObject selectCtrl;
 	public PlayerManager plyrMan;
-	//Screen shake lol
-	private float shake = 0;
 	public Camera mainCam;
-	public float shakeAmount = 0.7f;
-	public float decreaseFactor = 1;
 
 	public bool submit = false;
 
@@ -97,8 +89,8 @@ public class Ctrl : MonoBehaviour {
 	// Use this for initialization
 	void Awake() //INCONTROL
 	{
-		selectCtrl = GameObject.Find ("SelectController");
-		plyrMan = selectCtrl.GetComponent<PlayerManager> ();
+		plyrMan = this.GetComponent<PlayerManager> ();
+		/*selectCtrl = GameObject.Find ("SelectController");
 		wepSelect = true;
 		sndVolume = PlayerPrefs.GetFloat ("SndVol");
 
@@ -112,11 +104,13 @@ public class Ctrl : MonoBehaviour {
 		shipColorSet = PlayerPrefsX.GetColorArray ("Palette");
 		tempLives = PlayerPrefs.GetInt ("LivesNum") * 100;
 		tempLives = 200;
-		classicTurn = PlayerPrefs.GetInt ("TurnClassic");
+		classicTurn = PlayerPrefs.GetInt ("TurnClassic");*/
 	}
 	// Update is called once per frame
 	void Update () {
-		if (selectionDone) { //Players have ready selected their weapons
+
+
+		/*if (selectionDone) { //Players have ready selected their weapons
 			if (ready) { //on map select screen
 				if (submit) { //If submit is pressed start round
 					selectTitle.text = "";
@@ -194,7 +188,7 @@ public class Ctrl : MonoBehaviour {
 			shake -= Time.deltaTime * decreaseFactor;
 		} else {
 			shake = 0.0f;
-		}
+		}*/
 	}
 
 	void CreatePlayerShip (int playerNum) {
@@ -213,7 +207,7 @@ public class Ctrl : MonoBehaviour {
 
 	}
 	
-	void AddScore (int playerNum) {
+	/*void AddScore (int playerNum) {
 		//playerScore[playerNum] += 1; //Add a score to player who killed some1
 		playerDeaths += 1; //Add 1 to player death counter
 		playerTempScore [playerNum] += 1;
@@ -287,7 +281,7 @@ public class Ctrl : MonoBehaviour {
 		mapExists = false;
 		firstBloodHappened = false;
 		scorePanel.SetActive (true);
-	}
+	}*/
 
 	public void Rematch () { //Rematch button is pressed
 		rematch = true;

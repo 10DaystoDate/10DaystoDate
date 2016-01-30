@@ -46,8 +46,6 @@ public class PlayerActions : PlayerActionSet {
 		actions.Down.AddDefaultBinding( Key.DownArrow );
 		actions.Left.AddDefaultBinding( Key.LeftArrow );
 		actions.Right.AddDefaultBinding( Key.RightArrow );
-		actions.RTrigger.AddDefaultBinding( Key.RightControl );
-		actions.LTrigger.AddDefaultBinding( Key.RightShift );
 		actions.Start.AddDefaultBinding( Key.Return );
 
 		return actions;
@@ -57,16 +55,14 @@ public class PlayerActions : PlayerActionSet {
 	{
 		var actions = new PlayerActions();
 
-		actions.Green.AddDefaultBinding( Key.W );
-		actions.Red.AddDefaultBinding( Key.E );
-		actions.Blue.AddDefaultBinding( Key.Q );
+		actions.Green.AddDefaultBinding( Key.V );
+		actions.Red.AddDefaultBinding( Key.B );
+		actions.Blue.AddDefaultBinding( Key.N );
 
-		actions.Up.AddDefaultBinding( Key.Y );
-		actions.Down.AddDefaultBinding( Key.H );
-		actions.Left.AddDefaultBinding( Key.G );
-		actions.Right.AddDefaultBinding( Key.J );
-		actions.RTrigger.AddDefaultBinding( Key.Space );
-		actions.LTrigger.AddDefaultBinding( Key.LeftShift );
+		actions.Up.AddDefaultBinding( Key.W );
+		actions.Down.AddDefaultBinding( Key.S );
+		actions.Left.AddDefaultBinding( Key.A );
+		actions.Right.AddDefaultBinding( Key.D );
 		actions.Start.AddDefaultBinding( Key.Return );
 
 		return actions;
