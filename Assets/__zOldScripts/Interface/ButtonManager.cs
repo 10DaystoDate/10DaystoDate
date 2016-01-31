@@ -36,6 +36,7 @@ public class ButtonManager : MonoBehaviour
 		filteredDirection.Filter( inputDevice.Direction, Time.deltaTime );
 		bool green = inputDevice.Action1.WasPressed;
 		bool greenK = Input.GetButtonDown ("p0fire1");
+		bool enter = Input.GetButtonDown ("Submit");
 		bool red = inputDevice.Action2.WasPressed;
 		bool redK = Input.GetButtonDown ("p0fire2");
 		//bool yellow = inputDevice.Action4.WasPressed;
