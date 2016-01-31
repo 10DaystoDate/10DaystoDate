@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
 		pIn = playerInput.GetComponent<Player>();
 		curChooser = Instantiate (chooser, question [playerNum].transform.position, question [playerNum].transform.rotation) as GameObject;
+		curChooser.transform.parent = ctrl.transform;
 		curChooser.SetActive (false);
 		curQuestionNum = playerNum;
 
@@ -38,14 +39,12 @@ public class PlayerController : MonoBehaviour {
 		//Bool controls
 		bool up = pIn.Actions.Up.WasPressed;
 		bool down = pIn.Actions.Down.WasPressed;
-		bool left = pIn.Actions.Left;
-		bool right = pIn.Actions.Right;
 		bool green = pIn.Actions.Green.WasPressed;
 
 
 		if (ctrl.questionSelect) { //If in question selection phase
             // force cursor to move down one if question is already picked
-            if (question[curQuestionNum].text.Equals("")) {
+			if (question[curQuestionNum].color == new Color(255,255,255,0.3f)) {
                 ChangeQuestion(1);
             }
             //Movement
@@ -64,7 +63,6 @@ public class PlayerController : MonoBehaviour {
 					//Accept question, deactivate question chooser
 					ctrl.ChooseQuestion (playerNum, curQuestionNum); //Run ChooseQuestion on Ctrl script
 					curChooser.SetActive (false); //Disable the cursor chooser for now
-					Debug.Log ("YAY");
 				}
 			}
 		}
@@ -79,7 +77,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		curChooser.transform.position = question[curQuestionNum].transform.position;
         //logic to skip questions that are already chosen using recursion
-        if (question[curQuestionNum].text.Equals("")) {
+		if (question[curQuestionNum].color == new Color(255,255,255,0.3f)) {
             ChangeQuestion(amount);
         }
     }
@@ -90,7 +88,6 @@ public class PlayerController : MonoBehaviour {
 				//Accept question, deactivate question chooser
 				ctrl.ChooseQuestion (playerNum, curQuestionNum); //Run ChooseQuestion on Ctrl script
 				curChooser.SetActive (false); //Disable the cursor chooser for now
-				Debug.Log ("TOO SLOW");
 			}
 		}
 	}
