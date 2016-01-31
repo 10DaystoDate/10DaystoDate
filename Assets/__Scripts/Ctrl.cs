@@ -232,6 +232,7 @@ public class Ctrl : MonoBehaviour {
 		questionPhase += 1;
 		backdrop += 1;
 		gamedayPanel.SetActive (false);
+		timer = Time.time;
 		if (questionPhase <= 2) {
 			StartCoroutine (StartQuestionPhase ());
 		} else {
@@ -252,7 +253,7 @@ public class Ctrl : MonoBehaviour {
 		}
 		GetComponent<AudioSource> ().PlayOneShot (phoneVibrateSound);
 		for (int i = 0; i < phoneText.Length; i++) {
-			phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
+			phoneText [i].text = GenerateHeartText (playerScore [i]);
 		}
 		yield return new WaitForSeconds (4);
 		if (dayNumber < dayLimit) { //If there are still days to go
@@ -337,6 +338,20 @@ public class Ctrl : MonoBehaviour {
 		if (boolTest == 0) {
 			StartCoroutine(ClearQuestions ());
 		}
+	}
+
+	string GenerateHeartText (int numOfHearts) {
+		string heartString = "";
+		if (numOfHearts > 0) {
+			for (int i = 0; i < numOfHearts; i++) {
+				heartString += "<3";
+			}
+		} else {
+			for (int i = 0; i < numOfHearts; i++) {
+				heartString += "</3";
+			}
+		}
+		return heartString;
 	}
 
 	public void GoToLevel(int levelNum){
