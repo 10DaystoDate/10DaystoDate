@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<Questionlist>
+	<NumberQuestions>8</NumberQuestions>
+   <Question>
+		<id>0</id>
+		<name>Partying</name>
+		<size>6</size>
+		<object0> Are you going to Ryan's house party tonight? </object0>
+		<object1> Let's go take some shotss! </object1>
+		<object2> Yo take a shot with me! </object2>
+		<object3> What's your favorite kind of beer? </object3>	
+		<object4> Last nights party was totally awesome! </object4>
+		<object5> OMG Lan got sooo drunk last night! </object5>		
+   </Question>
+   <Question>
+		<id>1</id>
+		<name>Athletics</name>
+		<size>6</size>
+		<object0> I can bench over 9000 lbs! </object0>
+		<object1> Wanna go for a run? </object1>
+		<object2> Yo, let's hit the gym, get our swole on!  </object2>
+		<object3> Dabs. Football. </object3>		
+		<object4> You watchin' the Super Bowl? </object4>		
+		<object5> How's your fantasy football team doin? </object5>		
+   </Question>
+   <Question>
+		<id>2</id>
+		<name>Art</name>
+		<size>6</size>
+		<object0> Are you in my Art Appreciation class? </object0>
+		<object1> Picasso or Machiavelli? </object1>
+		<object2> Michaleangelo, what a guy. Am I right? </object2>
+		<object3> Let's go check out the new art exhibit! </object3>		
+		<object4> Wait, arts AND crafts? </object4>		
+		<object5> It's smart to like art! </object5>		
+   </Question>
+   <Question>
+		<id>3</id>
+		<name>Movies</name>
+		<size>6</size>
+		<object0> Han Shot first! </object0>
+		<object1> There's a glitch in the Matrix! </object1>
+		<object2> What's in the BOX???!  </object2>
+		<object3> Let's go to the movie theatre tonight! </object3>		
+		<object4> Wanna catch Star Wars at 9? </object4>		
+		<object5> Wanna watch a scary movie at my place? </object5>		
+   </Question>
+   <Question>
+		<id>4</id>
+		<name>Travel</name>
+		<size>6</size>
+		<object0> I would love to climb Mount Everest. </object0>
+		<object1> Come look at these figurines I got from Japan!  </object1>
+		<object2> I brought you a souveneir from Australia! </object2>
+		<object3> Have you been to Disney World? </object3>		
+		<object4> Wanna see pictures of my Europe trip? </object4>		
+		<object5> What's your favorite European country? </object5>	
+   </Question>
+   <Question>
+		<id>5</id>
+		<name>Cooking/Food</name>
+		<size>6</size>
+		<object0> Let's go to Saigon Restaurant! </object0>
+		<object1> Sushi Palace? </object1>
+		<object2> Wanna get fondue for two? </object2>
+		<object3> Anything good at the dining hall today? </object3>		
+		<object4> Wanna get some White Castle? </object4>				
+		<object5> Chipotle or Qdoba? </object5>		
+   </Question>
+   <Question>
+		<id>6</id>
+		<name>Video Games</name>
+		<size>6</size>
+		<object0> Wanna duo queue sometime? I'll carry. </object0>
+		<object1> How many times have you played Undertale? </object1>
+		<object2> I hate scrubs who can't wavedash and L-cancel. </object2>
+		<object3> Let's play a game of Astral Gun!</object3>		
+		<object4> Halo at my place? </object4>		
+		<object5> I can't wait to play Final Fantasy 63! </object5>		
+   </Question>
+   <Question>
+		<id>7</id>
+		<name>Drugs</name>
+		<size>6</size>
+		<object0> We should go to Amsterdam sometime. </object0>
+		<object1> Wake n' bake baby! </object1>
+		<object2> Let's smoke a joint </object2>
+		<object3> Hehehehehheeeee... hehe. </object3>	
+		<object4> Wanna drop acid? </object4>	
+		<object5> Let's get high. </object5>		
+   </Question>
+</Questionlist>
