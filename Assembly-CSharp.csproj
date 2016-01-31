@@ -47,6 +47,7 @@
   <ItemGroup>
      <Compile Include="Assets\__Scripts\CameraScript.cs" />
      <Compile Include="Assets\__Scripts\Ctrl.cs" />
+     <Compile Include="Assets\__Scripts\FollowScript.cs" />
      <Compile Include="Assets\__Scripts\HeartAnimation.cs" />
      <Compile Include="Assets\__Scripts\InControl\Plugins\iOS\ICadePluginPath.cs" />
      <Compile Include="Assets\__Scripts\InControl\Source\Binding\BindingListenOptions.cs" />
