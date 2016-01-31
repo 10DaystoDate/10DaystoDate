@@ -193,6 +193,7 @@ public class Ctrl : MonoBehaviour {
 					wepSelect = true;
 					selectionDone = false;
 					winScreen = false;
+					mainCam.GetComponent<MusicSelector> ().RandomSong ();
 				}
 			}
 		}
@@ -258,7 +259,7 @@ public class Ctrl : MonoBehaviour {
 			}
 		}
 		cutsceneGirl.GetComponent<Animator> ().SetTrigger ("IntroCutStart");
-		yield return new WaitForSeconds (3);
+		yield return new WaitForSeconds (3.5f);
 		StartCoroutine (StartDay ());
 	}
 
