@@ -32,6 +32,7 @@ public class Ctrl : MonoBehaviour {
 	public List<int> tempDefaultStats;
 	public List<int> gStats;
 
+	public AudioClip startSound;
 	public AudioClip dayStartSound;
 	public AudioClip phoneVibrateSound;
 	public AudioClip readySound;
@@ -152,7 +153,7 @@ public class Ctrl : MonoBehaviour {
 			if (selectionDone) { //Players have pressed start on character select screen
 				//Reset stats
 				if (ready) {
-					SetupGame (numOfPlayers);
+					StartCoroutine (SetupGame (numOfPlayers));
 					ready = false;
 				}
 			} else { 
@@ -205,6 +206,8 @@ public class Ctrl : MonoBehaviour {
 		}
 	}
 	void SetupGame (int numOfPlayers) { //Set up game scene (Create girl, players) //Reset game variables
+		GetComponent<AudioSource> ().PlayOneShot (startSound);
+		yield return new WaitForSeconds (0.5f);
 		ResetStats(); //Reset player stats
 		CreateGirl ();
 		numOfPlayers = 4; //set num of players to 4
