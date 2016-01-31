@@ -263,6 +263,7 @@ public class Ctrl : MonoBehaviour {
 	}
 
 	IEnumerator StartDay () { //Start day, reset all day variables, add 1 to day number
+		ResetAllPhonePos ();
 		camScript.CameraChangePos(3);
 		yield return new WaitForSeconds (1);
 		GetComponent<AudioSource> ().PlayOneShot (dayStartSound);
@@ -271,10 +272,8 @@ public class Ctrl : MonoBehaviour {
 		//Play day screen music
 		yield return new WaitForSeconds (1.5f);
 		camScript.CameraChangePos(4);
-
 		ChangeBackdrop (0);
 		questionPhase = 0; //Reset question phase
-		phonePanel.SetActive (false); //Disable phone panel
 		StartCoroutine (StartQuestionPhase ());
 	}
 
@@ -350,17 +349,19 @@ public class Ctrl : MonoBehaviour {
 		gamedayPanel.SetActive (false);
 
 		// display first person's win/loss
-		yield return new WaitForSeconds (0.5f);
+		yield return new WaitForSeconds (0.2f);
 		if (firstPerson) {
 			phonePanel.SetActive (true);
-			phonePanes [firstPersonNum].SetActive (true);
+			//phonePanes [firstPersonNum].SetActive (true);
 			for (int i = 0; i < playerScore.Length; i++) {
 				if (plyrMan.playerJoined [i] && i == firstPersonNum) { //If player is in the game
-					phonePanes [i].SetActive (true);
+					//phonePanes [i].SetActive (true);
+					MovePhone (i, 1);
 				} else {
-					phonePanes [i].SetActive (false);
+					//phonePanes [i].SetActive (false);
 				}
 			}
+			yield return new WaitForSeconds (0.5f);
 			switch (firstPersonPoints) {
 			case 2:
 				phoneText [firstPersonNum].text = "Her: That was amazing! <3";
@@ -376,9 +377,10 @@ public class Ctrl : MonoBehaviour {
 				break;
 			}
 			GetComponent<AudioSource> ().PlayOneShot (phoneVibrateSound);
-	        yield return new WaitForSeconds(3);
-	        phonePanes[firstPersonNum].SetActive(false);
-			phonePanel.SetActive(false);
+			yield return new WaitForSeconds(3);
+			ResetAllPhonePos ();
+	        //phonePanes[firstPersonNum].SetActive(false);
+			//phonePanel.SetActive(false);
 		}
 		firstPerson = false;
 
@@ -394,11 +396,13 @@ public class Ctrl : MonoBehaviour {
 		phonePanel.SetActive(true);
 		for (int i = 0; i < playerScore.Length; i++) {
 			if (plyrMan.playerJoined [i]) { //If player is in the game
-				phonePanes [i].SetActive (true);
+				MovePhone(i,1);
+				//phonePanes [i].SetActive (true);
 			} else {
-				phonePanes [i].SetActive (false);
+				//phonePanes [i].SetActive (false);
 			}
 		}
+		yield return new WaitForSeconds (0.5f);
 		GetComponent<AudioSource> ().PlayOneShot (phoneVibrateSound);
 		for (int i = 0; i < phoneText.Length; i++) {
 			phoneText [i].text = GenerateHeartText (playerDayScore [i]);
@@ -520,6 +524,18 @@ public class Ctrl : MonoBehaviour {
 		}
 		if (boolTest == 0) {
 			StartCoroutine(ClearQuestions ());
+		}
+	}
+
+	void MovePhone (int playerNum, int posNum) {
+		//Change phone pos, 0 = offscreen, 1 = onscreen
+		phoneText [playerNum].text = "";
+		phonePanes [playerNum].GetComponent<FollowScript> ().ChangePos (posNum);
+	}
+
+	void ResetAllPhonePos () {
+		for (int i = 0; i < playerScore.Length; i++) {
+			MovePhone (i, 0);
 		}
 	}
 
