@@ -44,14 +44,18 @@ public class PlayerController : MonoBehaviour {
 
 
 		if (ctrl.questionSelect) { //If in question selection phase
-			//Movement
-			if (ctrl.playerInQuestionSelect [playerNum]) { //If player is still choosing a question
+            // force cursor to move down one if question is already picked
+            if (question[curQuestionNum].text.Equals("")) {
+                ChangeQuestion(1);
+            }
+            //Movement
+            if (ctrl.playerInQuestionSelect [playerNum]) { //If player is still choosing a question
 
 				curChooser.SetActive (true);
 
 				if (up) {
-					ChangeQuestion (-1);
 					//move selector up
+					ChangeQuestion (-1);
 				} else if (down) {
 					//yes
 					ChangeQuestion (1);
@@ -74,8 +78,11 @@ public class PlayerController : MonoBehaviour {
 			curQuestionNum = 0; //Wrap around array
 		}
 		curChooser.transform.position = question[curQuestionNum].transform.position;
-		//Maybe add in logic for skipping taken question later
-	}
+        //logic to skip questions that are already chosen using recursion
+        if (question[curQuestionNum].text.Equals("")) {
+            ChangeQuestion(amount);
+        }
+    }
 
 	public void EndTimerChoose () {if (ctrl.questionSelect) { //If in question selection phase
 			//Movement

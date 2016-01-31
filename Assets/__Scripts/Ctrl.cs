@@ -73,19 +73,23 @@ public class Ctrl : MonoBehaviour {
 
 	public bool questionSelect = false;
 	public bool[] playerInQuestionSelect;
+    public bool firstPerson = false;
 
 	public int[] playerScore;
+    public int[] playerDayScore;
 
 	public int dayNumber = 0;
 	public int backdrop;
 	public int questionPhase = 0;
 	public int dayLimit = 5;
-	public float timerLength = 5;
+    public int firstPersonNum;
+    public int firstPersonPoints;
+    public float timerLength = 5;
 	private float timer = 0;
 	private float oldTime = 0;
 
-	// Use this for initialization
-	void Awake() //INCONTROL
+    // Use this for initialization
+    void Awake() //INCONTROL
 	{
 		plyrMan = this.GetComponent<PlayerManager> ();
 		camScript = mainCam.GetComponent<CameraScript> ();
@@ -143,7 +147,10 @@ public class Ctrl : MonoBehaviour {
 		for (int i = 0; i < playerScore.Length; i++) {
 			playerScore [i] = 0;
 		}
-	}
+        for (int i = 0; i < playerDayScore.Length; i++) {
+            playerDayScore[i] = 0;
+        }
+    }
 
 	void CreateGirl() { //Set girl stats and instantiate her?
 		if (gStats.Count > 1) {
@@ -228,15 +235,41 @@ public class Ctrl : MonoBehaviour {
 	}
 
 	IEnumerator ClearQuestions () {
-		yield return new WaitForSeconds (gamedayStartupTime);
+        yield return new WaitForSeconds (gamedayStartupTime);
 		questionPhase += 1;
 		backdrop += 1;
 		gamedayPanel.SetActive (false);
-		timer = Time.time;
-		if (questionPhase <= 2) {
+        timer = Time.time;
+
+        // display first person's win/loss
+        phonePanel.SetActive(true);
+        phonePanes[firstPersonNum].SetActive(true);
+        for (int i = 0; i < playerScore.Length; i++) {
+            if (plyrMan.playerJoined[i] && i == firstPersonNum) { //If player is in the game
+                phonePanes[i].SetActive(true);
+            }
+            else {
+                phonePanes[i].SetActive(false);
+            }
+        }
+        if (firstPersonPoints > 0) {
+            phoneText[firstPersonNum].text = "Her: I had a good time! :)";
+        }
+        else if (firstPersonPoints == 0) {
+            phoneText[firstPersonNum].text = "Her: ...";
+        }
+        else {
+            phoneText[firstPersonNum].text = "Her: You're kinda boring... :(";
+        }
+        yield return new WaitForSeconds(4);
+        phonePanes[firstPersonNum].SetActive(false);
+        phonePanel.SetActive(false);
+        firstPerson = false;
+
+        if (questionPhase <= 2) {
 			StartCoroutine (StartQuestionPhase ());
 		} else {
-			Debug.Log ("DAY FINISHED SHSOW SCORES");
+			Debug.Log ("DAY FINISHED SHOW SCORES");
 			StartCoroutine (EndDay ());
 		}
 	}
@@ -253,9 +286,12 @@ public class Ctrl : MonoBehaviour {
 		}
 		GetComponent<AudioSource> ().PlayOneShot (phoneVibrateSound);
 		for (int i = 0; i < phoneText.Length; i++) {
-			phoneText [i].text = GenerateHeartText (playerScore [i]);
+			phoneText [i].text = GenerateHeartText (playerDayScore [i]);
 		}
-		yield return new WaitForSeconds (4);
+        for (int i = 0; i < playerDayScore.Length; i++) {
+            playerDayScore[i] = 0;
+        }
+        yield return new WaitForSeconds (4);
 		if (dayNumber < dayLimit) { //If there are still days to go
 			StartCoroutine (StartDay ());
 		} else { //If all days are over
@@ -293,7 +329,7 @@ public class Ctrl : MonoBehaviour {
 			if (i == winningPlayer) {
 				phoneText [i].text = "Her: YES! <3";
 			} else {
-				phoneText [i].text = "";
+				phoneText [i].text = "Her: I'm not interested... sorry.";
 			}
 			//phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
 		}
@@ -319,16 +355,30 @@ public class Ctrl : MonoBehaviour {
 	}
 
 	public void ChooseQuestion (int playerNum, int questionNum) {
+        // save the first person who chose an answer that round
+        if(firstPerson == false) {
+            firstPersonNum = playerNum;
+            firstPersonPoints = questionScore[questionNum];
+            firstPerson = true;
+        }
 		playerScore[playerNum] += questionScore [questionNum]; //Add question score to player's score
-
-		playerInQuestionSelect [playerNum] = false; //Set player to finished selecting question
-
+        playerDayScore[playerNum] += questionScore[questionNum]; //Add question score to player's score
+        playerInQuestionSelect [playerNum] = false; //Set player to finished selecting question
 		for (int i = 0; i < 4; i++) { //for each question
 			if ( i != questionNum) { //if question is not the one player chose
 				qTextList [playerNum].questionText[i].text = ""; //Remove the question text
 			}
+		}		
+		//erase that choice from other player's choices
+		for(int x = 0; x < 4; x++) {
+			if(x != playerNum) {
+				for (int i = 0; i < 4; i++) { //for each question
+					if (i == questionNum) { //if question is the one the first player chose
+						qTextList [x].questionText[i].text = ""; //Remove the question text
+					}
+				}		
+			}
 		}
-
 		int boolTest = 0;
 		for (int i = 0; i < playerInQuestionSelect.Length; i++) {
 			if (playerInQuestionSelect [i]) {
@@ -339,6 +389,7 @@ public class Ctrl : MonoBehaviour {
 			StartCoroutine(ClearQuestions ());
 		}
 	}
+	
 
 	string GenerateHeartText (int numOfHearts) {
 		string heartString = "";
@@ -346,7 +397,8 @@ public class Ctrl : MonoBehaviour {
 			for (int i = 0; i < numOfHearts; i++) {
 				heartString += "<3";
 			}
-		} else {
+		} else if (numOfHearts < 0) {
+            numOfHearts *= -1;
 			for (int i = 0; i < numOfHearts; i++) {
 				heartString += "</3";
 			}
