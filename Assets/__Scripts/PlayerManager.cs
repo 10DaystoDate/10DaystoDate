@@ -267,9 +267,7 @@ public class PlayerManager : MonoBehaviour
 				// and it lets us easily find the keyboard player.
 				if (keyboardNum == 1) {
 					player.Actions = keyboardListener1;
-					Debug.Log ("ONE");
 				} else if (keyboardNum == 2){
-					Debug.Log ("TWO");
 					player.Actions = keyboardListener2;
 				}
 			}

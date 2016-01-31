@@ -51,7 +51,6 @@ public class Player : MonoBehaviour
 
 		playerStatus = ctrl.playerSelectText [playerNum];
 		GetComponent<SpriteRenderer> ().sprite = ctrl.playerSprites [playerNum];
-		Debug.Log (playerStatus);
 
 		//Player is choosing weapons
 		choosing = true;
@@ -60,25 +59,7 @@ public class Player : MonoBehaviour
 
 	void Update()
 	{
-		if (choosing) {/*
-			if (canPress) {
-				if (Mathf.Abs (Actions.Left) > deadzone) {
-					ChoosePart (-1);
-					canPress = false;
-				}
-				if (Mathf.Abs (Actions.Right) > deadzone) {
-					ChoosePart (1);
-					canPress = false;
-				}
-				if (Mathf.Abs (Actions.Up) > deadzone) {
-					ChangeFieldNum (-1);
-					canPress = false;
-				}
-				if (Mathf.Abs (Actions.Down) > deadzone) {
-					ChangeFieldNum (1);
-					canPress = false;
-				}
-			}*/
+		if (choosing) {
 			if (Actions.Green.WasPressed) {
 				if(second) {
 					choosing = false;

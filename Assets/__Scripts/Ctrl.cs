@@ -5,13 +5,13 @@ using InControl;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-//using InControl;
+using System.Xml;
 
 public class Ctrl : MonoBehaviour {
 	[System.Serializable]
 	public class QuestionList
 	{
-		public string[] question;
+		public List<string> question;
 	}
 	public QuestionList[] questionlist;
 
@@ -48,12 +48,11 @@ public class Ctrl : MonoBehaviour {
 
 	public bool goBack = false;
 	public bool wepSelect = true;
-	private bool questionStart = false;
+	//private bool questionStart = false;
 
 	public GameObject[] playerCurrent;
 	public GameObject[] playerInput;
 
-	public bool dayStart = false;
 	public float gamedayStartupTime = 2;
 	public int numOfPlayers;
 	public GameObject[] playerSpawn;
@@ -63,17 +62,22 @@ public class Ctrl : MonoBehaviour {
 	public Text timerText;
 
 	public GameObject gamedayPanel;
+	public GameObject[] questionPanes;
 	public GameObject phonePanel;
 	public GameObject[] phonePanes;
-	public GameObject morn;
-	public GameObject after;
-	public GameObject night;
+	public GameObject[] backdropImg;
 	public Text[] phoneText;
 	public Sprite[] playerSprites;
+	public GameObject winnerPlace;
+
+	public GameObject[] cutsceneObj;
+	public GameObject cutsceneGirl;
 
 	public bool questionSelect = false;
 	public bool[] playerInQuestionSelect;
     public bool firstPerson = false;
+	public bool mainMenu = true;
+	public bool winScreen = false;
 
 	public int[] playerScore;
     public int[] playerDayScore;
@@ -87,43 +91,115 @@ public class Ctrl : MonoBehaviour {
     public float timerLength = 5;
 	private float timer = 0;
 	private float oldTime = 0;
+	private bool backChanging = false;
+	private float aT = 0; //lerp float for announcer text color
 
-    // Use this for initialization
-    void Awake() //INCONTROL
+	public TextAsset GameAsset;
+	private void XMLtoQuestions()
+	{
+		XmlDocument xmlDoc = new XmlDocument(); // xmlDoc is the new xml document.
+		xmlDoc.LoadXml(GameAsset.text); // load the file.
+		XmlNodeList levelsList = xmlDoc.GetElementsByTagName("Question"); // array of the level nodes.
+		foreach (XmlNode levelInfo in levelsList)
+		{
+			XmlNodeList levelcontent = levelInfo.ChildNodes;
+			int questionsize = 0;
+			int questionID = 0;
+			foreach (XmlNode levelsItens in levelcontent)
+			{
+				if (levelsItens.Name == "id") {
+					questionID = int.Parse(levelsItens.InnerText);
+				}
+				if (levelsItens.Name == "size") {
+					questionsize = int.Parse(levelsItens.InnerText);
+				}
+				for (int i = 0; i < questionsize; i++) {
+					if (levelsItens.Name == "object" + i)
+					{
+						questionlist[questionID].question.Add(levelsItens.InnerText);
+					}
+				}
+			}
+		}
+	}
+
+	// Use this for initialization
+	void Awake() 
 	{
 		plyrMan = this.GetComponent<PlayerManager> ();
 		camScript = mainCam.GetComponent<CameraScript> ();
-
+		XMLtoQuestions();
 	}
+
 	// Update is called once per frame
 	void Update () {
-		if (selectionDone) { //Players have pressed start on character select screen
-			//Reset stats
-			if (ready) {
-				SetupGame (numOfPlayers);
-				ready = false;
+		var inputDevice = InputManager.ActiveDevice;
+		bool green = inputDevice.Action1.WasPressed;
+		bool greenK = Input.GetButtonDown ("Fire1");
+		bool red = inputDevice.Action2.WasPressed;
+		bool redK = Input.GetButtonDown ("Fire2");
+
+		if (mainMenu) {
+			if (mainCam.transform.position != new Vector3 (0, 0, mainCam.transform.position.z)) {
+				camScript.CameraChangePos (0);
 			}
-		}
-		if (dayStart) { //At school screen
-			//Go to day screen (Day 1)
-			StartCoroutine (StartDay ());
-			dayStart = false;
-		}
-		if (timer > Time.time) {
-			float roundedTime = Mathf.Round (timer - Time.time);
-			timerText.text = roundedTime.ToString ();
-			if (oldTime != roundedTime) {
-				GetComponent<AudioSource> ().PlayOneShot (timerTone);
-				oldTime = roundedTime;
+			if (green || greenK) {
+				mainMenu = false;
+				camScript.CameraChangePos (1);
 			}
 		} else {
-			timerText.text = "";
-			if (questionSelect) { //If in question select mode
-				for (int i = 0; i < playerCurrent.Length; i++) {
-					if (playerInQuestionSelect [i]) { //For all players in question select
-						playerCurrent [i].GetComponent<PlayerController> ().EndTimerChoose (); //Make them choose current choice
+			if (selectionDone) { //Players have pressed start on character select screen
+				//Reset stats
+				if (ready) {
+					SetupGame (numOfPlayers);
+					ready = false;
+				}
+			} else { 
+				if (red || redK) {
+					int joinTest = 0;
+					for (int i = 0; i < 4; i++) { //Generate 4 questions and set players answering questions to true
+						if (plyrMan.playerJoined [i]) {
+							joinTest += 1;
+						}
+					}
+					if (joinTest == 0) {
+						mainMenu = true;
 					}
 				}
+			}
+			if (timer > Time.time) {
+				float roundedTime = Mathf.Round (timer - Time.time);
+				timerText.text = roundedTime.ToString ();
+				if (oldTime != roundedTime) {
+					GetComponent<AudioSource> ().PlayOneShot (timerTone);
+					oldTime = roundedTime;
+				}
+			} else {
+				timerText.text = "";
+				if (questionSelect) { //If in question select mode
+					for (int i = 0; i < playerCurrent.Length; i++) {
+						if (playerInQuestionSelect [i]) { //For all players in question select
+							playerCurrent [i].GetComponent<PlayerController> ().EndTimerChoose (); //Make them choose current choice
+						}
+					}
+				}
+			}
+			if (winScreen) {
+				if (green || greenK) {
+					camScript.CameraChangePos(1);
+					ready = true;
+					wepSelect = true;
+					selectionDone = false;
+					winScreen = false;
+				}
+			}
+		}
+		if (backChanging) { //if backdrop is changing
+			backdropImg [backdrop].GetComponent<Image> ().color = Color.Lerp (Color.clear, Color.white, aT); //lerp backdrop img
+			if (aT < 1) {
+				aT += Time.deltaTime / 1;
+			} else {
+				backChanging = false;
 			}
 		}
 	}
@@ -138,7 +214,7 @@ public class Ctrl : MonoBehaviour {
 				numOfPlayers -= 1; //Subtract from num of players to find total num of players
 			}
 		}
-		dayStart = true;
+		StartCoroutine (CutsceneIntro());
 		ready = false;
 		submit = false;
 	}
@@ -150,6 +226,7 @@ public class Ctrl : MonoBehaviour {
         for (int i = 0; i < playerDayScore.Length; i++) {
             playerDayScore[i] = 0;
         }
+		dayNumber = 0;
     }
 
 	void CreateGirl() { //Set girl stats and instantiate her?
@@ -166,35 +243,48 @@ public class Ctrl : MonoBehaviour {
 			tempDefaultStats.RemoveAt(tempDefNum); //Remove element from tempDefault stats
 		}
 	}
+	IEnumerator CutsceneIntro () { //Start day, reset all day variables, add 1 to day number
+		camScript.CameraChangePos(2);
+		//StartAnimations
+		for (int i = 0; i < cutsceneObj.Length; i++) {
+			if (plyrMan.playerJoined [i]) { //If player is in the game
+				cutsceneObj [i].GetComponent<Animator> ().SetTrigger ("IntroCutStart");
+			} else {
+				cutsceneObj [i].GetComponent<SpriteRenderer> ().sprite = null;
+			}
+		}
+		cutsceneGirl.GetComponent<Animator> ().SetTrigger ("IntroCutStart");
+		yield return new WaitForSeconds (3);
+		StartCoroutine (StartDay ());
+	}
 
 	IEnumerator StartDay () { //Start day, reset all day variables, add 1 to day number
-		camScript.CameraChangePos(2);
+		camScript.CameraChangePos(3);
 		yield return new WaitForSeconds (1);
+		GetComponent<AudioSource> ().PlayOneShot (dayStartSound);
 		dayNumber += 1;
-		after.SetActive (false);
-		night.SetActive (false);
-		morn.SetActive(true);
 		dayText.text = string.Format ("Day {0}",dayNumber);
 		//Play day screen music
-		yield return new WaitForSeconds (2);
-		camScript.CameraChangePos(3);
-		backdrop = 0;
+		yield return new WaitForSeconds (1.5f);
+		camScript.CameraChangePos(4);
+
+		ChangeBackdrop (0);
 		questionPhase = 0; //Reset question phase
 		phonePanel.SetActive (false); //Disable phone panel
 		StartCoroutine (StartQuestionPhase ());
 	}
 
 	IEnumerator StartQuestionPhase () { //Start day, reset all day variables
-		if (backdrop == 1) {
-			morn.SetActive (false);
-			after.SetActive (true);
-		} 
-		else if (backdrop == 2) {
-			after.SetActive (false);
-			night.SetActive (true);
-		}
-		yield return new WaitForSeconds (gamedayStartupTime);
+		
+		yield return new WaitForSeconds (1.5f);
 		gamedayPanel.SetActive (true);
+		for (int i = 0; i < playerScore.Length; i++) {
+			if (plyrMan.playerJoined [i]) { //If player is in the game
+				questionPanes [i].SetActive (true);
+			} else {
+				questionPanes [i].SetActive (false);
+			}
+		}
 		CreateQuestions ();
 		timer = Time.time + timerLength; //Set timer
 
@@ -230,14 +320,27 @@ public class Ctrl : MonoBehaviour {
 		for (int i = 0; i < 4; i++) { //for each question box
 			if (plyrMan.playerJoined[i]) { //If player is in the game
 				qTextList [i].questionText[questionNum].text = questionlist [tempDefNum].question[tempQuestNum]; //Choose random question from the category for the player
+				qTextList [i].questionText[questionNum].color = Color.white;
+			}
+		}
+	}
+	void ChangeBackdrop (int backdropNum) {
+		aT = 0;
+		if (backdropNum < backdropImg.Length) {
+			backdrop = backdropNum;
+			backChanging = true;
+			for (int i = 0; i < backdropImg.Length; i++) { //set other backdrops to clear
+				if (i != backdrop) {
+					backdropImg [i].GetComponent<Image> ().color = Color.clear;
+				}
 			}
 		}
 	}
 
 	IEnumerator ClearQuestions () {
-        yield return new WaitForSeconds (gamedayStartupTime);
+        yield return new WaitForSeconds (2);
 		questionPhase += 1;
-		backdrop += 1;
+		ChangeBackdrop (questionPhase);
 		gamedayPanel.SetActive (false);
         timer = Time.time;
 
@@ -252,15 +355,20 @@ public class Ctrl : MonoBehaviour {
                 phonePanes[i].SetActive(false);
             }
         }
-        if (firstPersonPoints > 0) {
-            phoneText[firstPersonNum].text = "Her: I had a good time! :)";
-        }
-        else if (firstPersonPoints == 0) {
-            phoneText[firstPersonNum].text = "Her: ...";
-        }
-        else {
-            phoneText[firstPersonNum].text = "Her: You're kinda boring... :(";
-        }
+		switch (firstPersonPoints) {
+		case 2:
+			phoneText [firstPersonNum].text = "Her: That was amazing! <3";
+			break;
+		case 1:
+			phoneText [firstPersonNum].text = "Her: That was fun! :)";
+			break;
+		case 0:
+			phoneText [firstPersonNum].text = "Her: That was kind of boring...";
+			break;
+		case -1:
+			phoneText [firstPersonNum].text = "Her: I'm never doing that again :(";
+			break;
+		}
         yield return new WaitForSeconds(4);
         phonePanes[firstPersonNum].SetActive(false);
         phonePanel.SetActive(false);
@@ -269,7 +377,6 @@ public class Ctrl : MonoBehaviour {
         if (questionPhase <= 2) {
 			StartCoroutine (StartQuestionPhase ());
 		} else {
-			Debug.Log ("DAY FINISHED SHOW SCORES");
 			StartCoroutine (EndDay ());
 		}
 	}
@@ -316,7 +423,7 @@ public class Ctrl : MonoBehaviour {
 
 		phonePanel.SetActive(true);
 		for (int i = 0; i < phoneText.Length; i++) {
-			phoneText [i].text = "You: Will you be my girlfriend forever?";
+			phoneText [i].text = "You: Will you be my girlfriend?";
 			//phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
 		}
 		yield return new WaitForSeconds (3);
@@ -329,12 +436,22 @@ public class Ctrl : MonoBehaviour {
 			if (i == winningPlayer) {
 				phoneText [i].text = "Her: YES! <3";
 			} else {
-				phoneText [i].text = "Her: I'm not interested... sorry.";
+				if (playerScore [i] < 0) {
+					phoneText [i].text = "Her: I'm calling the cops.";
+				} else {
+					phoneText [i].text = "Her: I'm not interested... sorry.";
+				}
 			}
 			//phoneText[i].text = string.Format ("I heart you times {0}!", playerScore[i]);
 		}
 		yield return new WaitForSeconds (3);
-		camScript.CameraChangePos(4);
+		winnerPlace.GetComponent<Image>().sprite = playerSprites [winningPlayer];
+		camScript.CameraChangePos(5);
+		foreach (Transform child in transform) {//Destroy playercontrollers
+			GameObject.Destroy(child.gameObject);
+		}
+		yield return new WaitForSeconds (3);
+		winScreen = true;
 	}
 
 
@@ -366,7 +483,7 @@ public class Ctrl : MonoBehaviour {
         playerInQuestionSelect [playerNum] = false; //Set player to finished selecting question
 		for (int i = 0; i < 4; i++) { //for each question
 			if ( i != questionNum) { //if question is not the one player chose
-				qTextList [playerNum].questionText[i].text = ""; //Remove the question text
+				qTextList [playerNum].questionText[i].color = new Color(255,255,255,0.3f); //Remove the question text
 			}
 		}		
 		//erase that choice from other player's choices
@@ -374,7 +491,7 @@ public class Ctrl : MonoBehaviour {
 			if(x != playerNum) {
 				for (int i = 0; i < 4; i++) { //for each question
 					if (i == questionNum) { //if question is the one the first player chose
-						qTextList [x].questionText[i].text = ""; //Remove the question text
+						qTextList [x].questionText[i].color = new Color(255,255,255,0.3f); //Remove the question text
 					}
 				}		
 			}
