@@ -205,7 +205,7 @@ public class Ctrl : MonoBehaviour {
 			}
 		}
 	}
-	void SetupGame (int numOfPlayers) { //Set up game scene (Create girl, players) //Reset game variables
+	IEnumerator SetupGame (int numOfPlayers) { //Set up game scene (Create girl, players) //Reset game variables
 		GetComponent<AudioSource> ().PlayOneShot (startSound);
 		yield return new WaitForSeconds (0.5f);
 		ResetStats(); //Reset player stats
