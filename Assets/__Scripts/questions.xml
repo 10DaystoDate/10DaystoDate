@@ -16,33 +16,33 @@
 		<id>1</id>
 		<name>Athletics</name>
 		<size>6</size>
-		<object0> I can bench over 9000 lbs! </object0>
+		<object0> Watch me bench over 9000 lbs! </object0>
 		<object1> Wanna go for a run? </object1>
 		<object2> Yo, let's hit the gym, get our swole on!  </object2>
 		<object3> Dabs. Football. </object3>		
 		<object4> You watchin' the Super Bowl? </object4>		
-		<object5> How's your fantasy football team doin? </object5>		
+		<object5> Do you even lift? </object5>		
    </Question>
    <Question>
 		<id>2</id>
 		<name>Art</name>
 		<size>6</size>
-		<object0> Are you in my Art Appreciation class? </object0>
-		<object1> Picasso or Machiavelli? </object1>
+		<object0> You're in my art class, right? </object0>
+		<object1> Do you like Picasso or Machiavelli better? </object1>
 		<object2> Michaleangelo, what a guy. Am I right? </object2>
 		<object3> Let's go check out the new art exhibit! </object3>		
-		<object4> Wait, arts AND crafts? </object4>		
+		<object4> Arts AND crafts?? </object4>		
 		<object5> It's smart to like art! </object5>		
    </Question>
    <Question>
 		<id>3</id>
 		<name>Movies</name>
 		<size>6</size>
-		<object0> Han Shot first! </object0>
+		<object0> Where's Leonardo DiCaprio's oscar?? </object0>
 		<object1> There's a glitch in the Matrix! </object1>
-		<object2> What's in the BOX???!  </object2>
-		<object3> Let's go to the movie theatre tonight! </object3>		
-		<object4> Wanna catch Star Wars at 9? </object4>		
+		<object2> What was the last movie you watched? </object2>
+		<object3> Let's go to the movie theater tonight! </object3>		
+		<object4> Wanna catch Star Wars at the cinema? </object4>		
 		<object5> Wanna watch a scary movie at my place? </object5>		
    </Question>
    <Question>
@@ -58,10 +58,10 @@
    </Question>
    <Question>
 		<id>5</id>
-		<name>Cooking/Food</name>
+		<name>Food</name>
 		<size>6</size>
 		<object0> Let's go to Saigon Restaurant! </object0>
-		<object1> Sushi Palace? </object1>
+		<object1> Sushi Palace? All you can eat sushi!</object1>
 		<object2> Wanna get fondue for two? </object2>
 		<object3> Anything good at the dining hall today? </object3>		
 		<object4> Wanna get some White Castle? </object4>				
@@ -71,22 +71,22 @@
 		<id>6</id>
 		<name>Video Games</name>
 		<size>6</size>
-		<object0> Wanna duo queue sometime? I'll carry. </object0>
-		<object1> How many times have you played Undertale? </object1>
-		<object2> I hate scrubs who can't wavedash and L-cancel. </object2>
-		<object3> Let's play a game of Astral Gun!</object3>		
-		<object4> Halo at my place? </object4>		
+		<object0> Oh yeah. I'm Diamond league. </object0>
+		<object1> Undertale. Genocide or Pacifist run? </object1>
+		<object2> I hate scrubs who can't wavedash. </object2>
+		<object3> Let's play a game of Astral Gun! </object3>		
+		<object4> Hey, add me on League of Legends! </object4>		
 		<object5> I can't wait to play Final Fantasy 63! </object5>		
    </Question>
    <Question>
 		<id>7</id>
 		<name>Drugs</name>
 		<size>6</size>
-		<object0> We should go to Amsterdam sometime. </object0>
-		<object1> Wake n' bake baby! </object1>
+		<object0> Got any bud on ya? </object0>
+		<object1> Come on, we can't make it through class sober! </object1>
 		<object2> Let's smoke a joint </object2>
 		<object3> Hehehehehheeeee... hehe. </object3>	
-		<object4> Wanna drop acid? </object4>	
-		<object5> Let's get high. </object5>		
+		<object4> Wanna learn how to roll a joint? </object4>	
+		<object5> I wish I was high right now. You too? </object5>		
    </Question>
 </Questionlist>

@@ -82,12 +82,14 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-	public void EndTimerChoose () {if (ctrl.questionSelect) { //If in question selection phase
+	public void EndTimerChoose () {
+		if (ctrl.questionSelect) { //If in question selection phase
 			//Movement
 			if (ctrl.playerInQuestionSelect [playerNum]) {
 				//Accept question, deactivate question chooser
-				ctrl.ChooseQuestion (playerNum, curQuestionNum); //Run ChooseQuestion on Ctrl script
 				curChooser.SetActive (false); //Disable the cursor chooser for now
+				//curQuestionNum = -1;
+				ctrl.ChooseQuestion (playerNum, -1); //Run ChooseQuestion on Ctrl script
 			}
 		}
 	}

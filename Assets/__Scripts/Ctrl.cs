@@ -36,6 +36,7 @@ public class Ctrl : MonoBehaviour {
 	public AudioClip phoneVibrateSound;
 	public AudioClip readySound;
 	public AudioClip timerTone;
+	public AudioClip selectTone;
 
 	public Camera mainCam;
 	public CameraScript camScript;
@@ -276,7 +277,7 @@ public class Ctrl : MonoBehaviour {
 
 	IEnumerator StartQuestionPhase () { //Start day, reset all day variables
 		
-		yield return new WaitForSeconds (1.5f);
+		yield return new WaitForSeconds (1.2f);
 		gamedayPanel.SetActive (true);
 		for (int i = 0; i < playerScore.Length; i++) {
 			if (plyrMan.playerJoined [i]) { //If player is in the game
@@ -338,41 +339,43 @@ public class Ctrl : MonoBehaviour {
 	}
 
 	IEnumerator ClearQuestions () {
+		questionSelect = false;
+		timer = Time.time;
         yield return new WaitForSeconds (2);
 		questionPhase += 1;
 		ChangeBackdrop (questionPhase);
 		gamedayPanel.SetActive (false);
-        timer = Time.time;
 
         // display first person's win/loss
-        phonePanel.SetActive(true);
-        phonePanes[firstPersonNum].SetActive(true);
-        for (int i = 0; i < playerScore.Length; i++) {
-            if (plyrMan.playerJoined[i] && i == firstPersonNum) { //If player is in the game
-                phonePanes[i].SetActive(true);
-            }
-            else {
-                phonePanes[i].SetActive(false);
-            }
-        }
-		switch (firstPersonPoints) {
-		case 2:
-			phoneText [firstPersonNum].text = "Her: That was amazing! <3";
-			break;
-		case 1:
-			phoneText [firstPersonNum].text = "Her: That was fun! :)";
-			break;
-		case 0:
-			phoneText [firstPersonNum].text = "Her: That was kind of boring...";
-			break;
-		case -1:
-			phoneText [firstPersonNum].text = "Her: I'm never doing that again :(";
-			break;
+		if (firstPerson) {
+			phonePanel.SetActive (true);
+			phonePanes [firstPersonNum].SetActive (true);
+			for (int i = 0; i < playerScore.Length; i++) {
+				if (plyrMan.playerJoined [i] && i == firstPersonNum) { //If player is in the game
+					phonePanes [i].SetActive (true);
+				} else {
+					phonePanes [i].SetActive (false);
+				}
+			}
+			switch (firstPersonPoints) {
+			case 2:
+				phoneText [firstPersonNum].text = "Her: That was amazing! <3";
+				break;
+			case 1:
+				phoneText [firstPersonNum].text = "Her: That was fun! :)";
+				break;
+			case 0:
+				phoneText [firstPersonNum].text = "Her: That was kind of boring...";
+				break;
+			case -1:
+				phoneText [firstPersonNum].text = "Her: I'm never doing that again! :(";
+				break;
+			}
+	        yield return new WaitForSeconds(3);
+	        phonePanes[firstPersonNum].SetActive(false);
+			phonePanel.SetActive(false);
 		}
-        yield return new WaitForSeconds(4);
-        phonePanes[firstPersonNum].SetActive(false);
-        phonePanel.SetActive(false);
-        firstPerson = false;
+		firstPerson = false;
 
         if (questionPhase <= 2) {
 			StartCoroutine (StartQuestionPhase ());
@@ -472,28 +475,36 @@ public class Ctrl : MonoBehaviour {
 	}
 
 	public void ChooseQuestion (int playerNum, int questionNum) {
+		GetComponent<AudioSource> ().PlayOneShot (selectTone);
         // save the first person who chose an answer that round
-        if(firstPerson == false) {
-            firstPersonNum = playerNum;
-            firstPersonPoints = questionScore[questionNum];
-            firstPerson = true;
-        }
-		playerScore[playerNum] += questionScore [questionNum]; //Add question score to player's score
-        playerDayScore[playerNum] += questionScore[questionNum]; //Add question score to player's score
-        playerInQuestionSelect [playerNum] = false; //Set player to finished selecting question
-		for (int i = 0; i < 4; i++) { //for each question
-			if ( i != questionNum) { //if question is not the one player chose
-				qTextList [playerNum].questionText[i].color = new Color(255,255,255,0.3f); //Remove the question text
+		if (questionNum == -1) {
+			playerInQuestionSelect [playerNum] = false; //Set player to finished selecting question
+			for (int i = 0; i < 4; i++) { //for each question
+				qTextList [playerNum].questionText [i].color = new Color (255, 255, 255, 0.3f); //Remove the question text
+			}	
+		} else {
+			if (firstPerson == false) {
+				firstPersonNum = playerNum;
+				firstPersonPoints = questionScore [questionNum];
+				firstPerson = true;
 			}
-		}		
-		//erase that choice from other player's choices
-		for(int x = 0; x < 4; x++) {
-			if(x != playerNum) {
-				for (int i = 0; i < 4; i++) { //for each question
-					if (i == questionNum) { //if question is the one the first player chose
-						qTextList [x].questionText[i].color = new Color(255,255,255,0.3f); //Remove the question text
-					}
-				}		
+			playerScore [playerNum] += questionScore [questionNum]; //Add question score to player's score
+			playerDayScore [playerNum] += questionScore [questionNum]; //Add question score to player's score
+			playerInQuestionSelect [playerNum] = false; //Set player to finished selecting question
+			for (int i = 0; i < 4; i++) { //for each question
+				if (i != questionNum) { //if question is not the one player chose
+					qTextList [playerNum].questionText [i].color = new Color (255, 255, 255, 0.3f); //Remove the question text
+				}
+			}		
+			//erase that choice from other player's choices
+			for (int x = 0; x < 4; x++) {
+				if (x != playerNum) {
+					for (int i = 0; i < 4; i++) { //for each question
+						if (i == questionNum) { //if question is the one the first player chose
+							qTextList [x].questionText [i].color = new Color (255, 255, 255, 0.3f); //Remove the question text
+						}
+					}		
+				}
 			}
 		}
 		int boolTest = 0;
@@ -506,7 +517,6 @@ public class Ctrl : MonoBehaviour {
 			StartCoroutine(ClearQuestions ());
 		}
 	}
-	
 
 	string GenerateHeartText (int numOfHearts) {
 		string heartString = "";
