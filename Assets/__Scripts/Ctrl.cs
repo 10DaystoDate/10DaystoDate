@@ -207,7 +207,7 @@ public class Ctrl : MonoBehaviour {
 	}
 	IEnumerator SetupGame (int numOfPlayers) { //Set up game scene (Create girl, players) //Reset game variables
 		GetComponent<AudioSource> ().PlayOneShot (startSound);
-		yield return new WaitForSeconds (0.5f);
+		yield return new WaitForSeconds (0.3f);
 		ResetStats(); //Reset player stats
 		CreateGirl ();
 		numOfPlayers = 4; //set num of players to 4
@@ -349,7 +349,8 @@ public class Ctrl : MonoBehaviour {
 		ChangeBackdrop (questionPhase);
 		gamedayPanel.SetActive (false);
 
-        // display first person's win/loss
+		// display first person's win/loss
+		yield return new WaitForSeconds (0.5f);
 		if (firstPerson) {
 			phonePanel.SetActive (true);
 			phonePanes [firstPersonNum].SetActive (true);
@@ -374,6 +375,7 @@ public class Ctrl : MonoBehaviour {
 				phoneText [firstPersonNum].text = "Her: I'm never doing that again! :(";
 				break;
 			}
+			GetComponent<AudioSource> ().PlayOneShot (phoneVibrateSound);
 	        yield return new WaitForSeconds(3);
 	        phonePanes[firstPersonNum].SetActive(false);
 			phonePanel.SetActive(false);

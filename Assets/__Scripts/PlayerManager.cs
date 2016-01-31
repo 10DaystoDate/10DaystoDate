@@ -23,7 +23,6 @@ public class PlayerManager : MonoBehaviour
 
 	public AudioClip joinSound;
 	public AudioClip leaveSound;
-	private float volume;
 
 	public bool readyToPlay = false; //All players are ready to play
 	
@@ -43,7 +42,6 @@ public class PlayerManager : MonoBehaviour
 	void Awake () {
 		mainCtrl = GameObject.Find ("_MainController");
 		ctrl = mainCtrl.GetComponent<Ctrl> ();
-		volume = PlayerPrefs.GetFloat ("SndVol");
 	}
 	void OnEnable()
 	{
@@ -282,7 +280,7 @@ public class PlayerManager : MonoBehaviour
 			}
 			
 			players.Add( player );
-			GetComponent<AudioSource>().PlayOneShot(joinSound, volume); // Play the AudioClip
+			GetComponent<AudioSource>().PlayOneShot(joinSound); // Play the AudioClip
 			
 			return player;
 		}
@@ -299,7 +297,7 @@ public class PlayerManager : MonoBehaviour
 		players.Remove( player );
 		player.Actions = null;
 		Destroy( player.gameObject );
-		GetComponent<AudioSource>().PlayOneShot(leaveSound, volume); // Play the AudioClip
+		GetComponent<AudioSource>().PlayOneShot(leaveSound); // Play the AudioClip
 	}
 
 	public int FindPlayer () { //Finds empty player slot in bool array
