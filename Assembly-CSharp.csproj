@@ -47,6 +47,7 @@
   <ItemGroup>
      <Compile Include="Assets\__Scripts\CameraScript.cs" />
      <Compile Include="Assets\__Scripts\Ctrl.cs" />
+     <Compile Include="Assets\__Scripts\HeartAnimation.cs" />
      <Compile Include="Assets\__Scripts\InControl\Plugins\iOS\ICadePluginPath.cs" />
      <Compile Include="Assets\__Scripts\InControl\Source\Binding\BindingListenOptions.cs" />
      <Compile Include="Assets\__Scripts\InControl\Source\Binding\BindingSource.cs" />
@@ -241,8 +242,8 @@
      <Compile Include="Assets\__zOldScripts\SelfDestruct.cs" />
      <Compile Include="Assets\__zOldScripts\SetAudioVolume.cs" />
      <Compile Include="Assets\__zOldScripts\StarScript.cs" />
+     <None Include="Assets\__Scripts\questions.xml" />
      <None Include="Assets\__Scripts\InControl\Readme\README.txt" />
-     <None Include="Assets\questions.xml" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
